@@ -1,0 +1,7 @@
+<header class='header'>
+  <span class="logo"/>
+  <a class='user'><i class="icon-user"/></a>
+  <a class='cog'><i class='icon-cog'/></a>
+  <h3 class='app_name'>{{setting "name"}}</h3>
+</header>
+<section data-main/>

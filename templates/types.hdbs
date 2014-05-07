@@ -1,0 +1,3 @@
+{{#each types}}
+<option value="{{id}}">{{name}}</option>
+{{/each}}

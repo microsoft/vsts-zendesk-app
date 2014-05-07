@@ -1,0 +1,8 @@
+<table class="table table-condensed">
+    {{#each restricted_fields}}
+    <tr>
+    <td><strong>{{name}}</strong></td>
+        <td>{{{value}}}</td>
+    </tr>
+    {{/each}}
+</table>

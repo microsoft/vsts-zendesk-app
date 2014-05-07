@@ -1,0 +1,70 @@
+<form class='form-horizontal project-selection'>
+    <p class="help">{{t "modals.new.help"}}</p>
+
+    <p class='alert alert-error errors' style='display:none'>
+    </p>
+
+    <div class='control-group project-selection'>
+        <label class='control-label project-selection' for='project'>{{t "modals.new.fields.project"}}:</label>
+        <div class='controls'>
+            <select id='project' class='input-large inputVsoProject'>
+            </select>
+        </div>
+    </div>
+    <div class='newForm'>
+        <div class='control-group'>
+            <label class='control-label' for='type'>{{t "modals.new.fields.type"}}</label>
+            <div class='controls'>
+                <select id='type' class='input-xlarge'></select>
+            </div>
+        </div>
+        <div class='control-group severityInput'>
+            <label class='control-label' for='type'>{{t "modals.new.fields.severity"}}</label>
+            <div class='controls'>
+                <select id='severity' class='input-xlarge'>
+                    <option value='1 - Critical'>1 - Critical</option>
+                    <option value='2 - High'>2 - High</option>
+                    <option value='3 - Medium'>3 - Medium</option>
+                    <option value='4 - Low'>4 - Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class='control-group'>
+            <label class='control-label' for='summary'>{{t "modals.new.fields.summary"}}</label>
+            <div class='controls'>
+                <input type='text' id='summary' class='input-xxlarge'>
+            </div>
+        </div>
+
+        <div class='control-group'>
+            <label class='control-label' for='description'>{{t "modals.new.fields.description"}}</label>
+            <div class='controls'>
+                <textarea id='description' class='input-xxlarge'></textarea>
+                <a href="#" class="copyDescription">{{t "modals.new.copyDescription"}}</a>
+            </div>
+        </div>
+        {{#if attachments.length}}
+        <div class='control-group'>
+            <label class='control-label'>{{t "modals.new.fields.attachments"}}</label>
+            <div class='controls attachments'>
+                <ul>
+                    {{#each attachments}}
+                    <li>
+                        <label>
+                            <input type='checkbox' value='{{content_url}}'>
+                                {{#if thumbnails.length}}
+                                <img src="{{thumbnails.0.content_url}}">
+                  {{/if}}
+                  {{file_name}}
+                </label>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</form>
+
+<div class="loading" style='display:none'>{{spinner "dotted"}}</div>

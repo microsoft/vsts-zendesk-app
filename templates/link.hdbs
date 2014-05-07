@@ -1,0 +1,34 @@
+<form class='form-horizontal' novalidate='' nosubmit=''>
+    <div class='main-section'>
+        <p class='alert alert-error errors' style='display:none'></p>
+        <div class="control-group">
+            <label class="control-label" for="inputVsoWorkItemId">Work item</label>
+            <div class="controls">
+                <input type="text" class='input-mini'  id="inputVsoWorkItemId"  required="" pattern='[0-9]*'>
+                    <button type='button' class='btn btn-primary btn-small accept' style='display:inline;'>{{t "modals.link.accept"}}</button>
+                    <button type='button' class='btn btn-mini search' style='display:inline;'>{{t "modals.link.search"}}</button>
+                    <span class="help-block">{{t "modals.link.help"}}</span>
+                </div>
+        </div>
+    </div>
+</form>
+
+<div class="search-section" style="display:none;">
+    <form class="form-inline">
+        <hr/>
+        <fieldset>
+            <legend>{{t "modals.link.searchLegend"}}</legend>
+            <label>{{t "modals.link.projectLabel"}}</label>
+            <select id='project' class='input-medium'>
+            </select>
+            <label>{{t "modals.link.queryLabel"}}</label>
+            <select id='query' class='input-medium'>
+            </select>
+            <button type="button" class="btn query">{{t "modals.link.query"}}</button>
+        </fieldset>
+        <div class='results'>
+        </div>
+    </form>
+</div>
+
+<div class="loading" style='display:none'>{{spinner "dotted"}}</div>

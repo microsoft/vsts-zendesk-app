@@ -1,0 +1,28 @@
+{{#if workItems.length}}
+    <div class="alert alert-success">
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>{{t "queryResults.columnId"}}</th>
+                <th>{{t "queryResults.columnType"}}</th>
+                <th>{{t "queryResults.columnTitle"}}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each workItems}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{type}}</td>
+                <td>{{title}}</td>
+                <td><a class="btn workItemResult" href="#" data-id="{{id}}" title="Link"><i class="icon-check"></i></a>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+{{else}}
+    <div class="alert alert-info">
+      {{t "queryResults.noWorkItem"}}
+    </div>
+{{/if}}

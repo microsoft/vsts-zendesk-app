@@ -1,0 +1,3 @@
+<div class="alert alert-error">
+    <strong>{{t "errorOoops"}}</strong> {{t "errorLoadingApp"}} <a class='user-link'><i class="icon-user"/></a>
+</div>

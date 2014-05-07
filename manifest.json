@@ -1,0 +1,31 @@
+{
+  "author": {
+    "name": "TBD",
+    "email": "tbd@tbd.com"
+  },
+  "location": [
+    "ticket_sidebar"
+  ],
+  "defaultLocale": "en",
+  "singleInstall": true,
+  "frameworkVersion": "1.0",
+  "version": "1.0",
+  "parameters": [
+    {
+      "name": "vso_account",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "vso_tag",
+      "type": "text",
+      "required": false,
+      "default": "zendesk"
+    },  
+    {
+      "name": "vso_field_settings",
+      "type": "hidden",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+<form class='form-horizontal'>
+<p class='alert alert-error errors' style='display:none'>
+</p>
+<textarea placeholder="{{t "modals.notify.placeholder"}}"></textarea>
+<a href="#" class="copyLastComment">{{t "modals.notify.copyLastComment"}}</a>
+{{#if attachments.length}}
+    <div>
+      <label>{{t "modals.new.fields.attachments"}}</label>
+      <div class='attachments'>
+        <ul>
+          {{#each attachments}}
+            <li>
+              <label>
+                <input type='checkbox' value='{{content_url}}'>
+                {{#if thumbnails.length}}
+                  <img src="{{thumbnails.0.content_url}}">
+                {{/if}}
+                {{file_name}}
+              </label>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+{{/if}}
+</form>
+<div class="loading" style='display:none'>{{spinner "dotted"}}</div>

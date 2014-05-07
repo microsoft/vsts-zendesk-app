@@ -1,0 +1,124 @@
+{
+  "app": {
+    "parameters": {
+      "vso_account": {
+        "label": "Visual Studio Online account name",
+        "helpText": "Enter your Visual Studio Online account name like in https://<account_name>.visualstudio.com. You should create a Zendesk service hook in Visual Studio online for each project you wish to integrate work item comments in Zendesk. Learn more visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+      },
+      "vso_tag": {
+        "label": "Visual Studio Online work item tag",
+        "helpText": "Enter the tag you want to add to each Visual Studio Online linked work item. If empty, no tag will be added."
+      }
+    }
+  },
+  "buttons": {
+    "create": "New work item",
+    "link": "Link to work item",
+    "notify": "Notify"
+  },
+  "parts": {
+    "workItems": "Linked work items"
+  },
+  "admin": {
+    "title": "Administration",
+    "summary": "Summary",
+    "details": "Details",
+    "settingsSaved": "Your Visual Studio Online settings have been saved."
+  },
+  "login": {
+    "title": "Login",
+    "help": "Set your Visual Studio Online alternate credentials.",
+    "username": "Username",
+    "password": "Password",
+    "button": "Login",
+    "errRequiredFields": "Both username and password fields are required"
+  },
+  "workItems": {
+    "unlink": "Unlink this work item",
+    "showDetails": "Show more details about this work item",
+    "noWorkItem": "There are no work items related to this ticket.",
+    "title": "Linked work items ({{count}})"
+  },
+  "queryResults": {
+    "columnId": "Id",
+    "columnType": "Type",
+    "columnTitle": "Title",
+    "noWorkItem": "No work items returned by query.",
+    "returnedWorkItems": "Query returned {{count}} work items"
+  },
+  "modals": {
+    "details": {
+      "title": "{{name}} details",
+      "loading": "Loading work item details...",
+      "close": "Close"
+    },
+    "unlink": {
+      "title": "Unlink work item",
+      "text": "Are you sure you want to unlink <strong>{{name}}</strong> from this ticket?",
+      "close": "No, don't do anything",
+      "accept": "Yes, unlink it.",
+      "errUnlink": "Could not unlink ticket in Visual Studio Online. Please try again."
+    },
+    "link": {
+      "title": "Link to a work item",
+      "close": "Go back",
+      "accept": "Link",
+      "search": "Search",
+      "query": "Query",
+      "help": "Please enter the the work item id you'd like to link this ticket with. If you don't know the number of the work item to link, click in button 'Search' to help you find out the work item.",
+      "searchLegend": "Search",
+      "projectLabel": "Project",
+      "queryLabel": "Query",
+      "errWorkItemIdNaN": "The work item id must be a number.",
+      "errCannotGetWorkItem": "Something went wrong while checking work item. Please try again.",
+      "errCannotUpdateWorkItem": "Something went wrong while updating work item. Please try again.",
+      "errAlreadyLinked": "This ticket is already linked that work item."
+    },
+    "new": {
+      "title": "New Visual Studio Online Work Item",
+      "close": "Go back",
+      "accept": "Create work item",
+      "help": "Fill this form to create a new Visual Studio Online work item and link it to this ticket.",
+      "automatic": "Automatic",
+      "errProjRequired": "The project is required",
+      "errWorkItemTypeRequired": "The work item type is required",
+      "errSummaryRequired": "The summary is required",
+      "fields": {
+        "project": "Project",
+        "type": "Type",
+        "summary": "Summary",
+        "description": "Description",
+        "assignee": "Assignee",
+        "requester": "Requester",
+        "attachments": "Attachments",
+        "severity": "Severity"
+      },
+      "copyDescription": "Copy the ticket's description"
+    },
+    "notify": {
+      "title": "Notify linked work items",
+      "close": "Go back",
+      "accept": "Notify work items",
+      "placeholder": "Type in some text to add to the notification",
+      "copyLastComment": "Copy the last comment",
+      "errCommentRequired": "The notification is required"
+    }
+  },
+  "notify": {
+    "message": "-- This notification was sent from Zendesk to all linked Visual Studio Online work items by {{name}}. --",
+    "vso": "Notification from Visual Studio Online work item {{workItemKey}}",
+    "notification": "The linked Visual Studio Online work items have been notified",
+    "workItemCreated": "Work item created in Visual Studio Online with id: %@",
+    "workItemLinked": "Ticket linked with Visual Studio Online work item with id: %@",
+    "workItemUnlinked": "Ticket unlinked of Visual Studio Online work item with id: %@"
+  },
+  "finishSetup": "You didn't finish your app configuration: your Visual Studio Online account is empty.",
+  "errorAjax": "There was an error contacting with the server. Please try again",
+  "errorServer": "[%@ %@: %@]",
+  "errorLoadingApp": "Something went wrong while loading the app. Confirm that your Visual Studio Online alternate credentials are correct by clicking in the user icon.",
+  "errorLoadingWorkItems": "Something went wrong while loading working items. Click the refresh icon to try again.",
+  "errorOoops" : "Ooops!",
+  "growl": {
+    "unhandledField": "The field {{name}} is not handled! The work item creation process won't work."
+  }
+}

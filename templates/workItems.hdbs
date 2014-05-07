@@ -1,0 +1,26 @@
+{{#if workItems.length}}
+  <h3>{{t "workItems.title" count=workItems.length}}</h3>
+  {{#each workItems}}
+    <div class='workItem' data-id='{{id}}'>
+      <h4>
+        <a href="{{webUrl}}" target="_blank">{{title}}</a>
+        <a class='action showDetails' title='{{t "workItems.showDetails"}}'>
+          <i class='icon-eye-open'></i>
+        </a>
+        <a class='action unlink' title='{{t "workItems.unlink"}}'>
+          <i class='icon-remove'></i>
+        </a>
+      </h4>
+      <ul>
+        {{#each restricted_fields}}
+          <li>
+            <strong>{{name}}</strong>
+            {{value}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/each}}
+{{else}}
+  <p class='help'>{{t "workItems.noWorkItem"}}</p>
+{{/if}}
