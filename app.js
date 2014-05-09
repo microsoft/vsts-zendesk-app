@@ -811,7 +811,7 @@
             }
 
             this.authString(vso_username, vso_password);
-            services.notify("Visual Studio Online alternate credentials stored with success.");
+            services.notify("Saved Successfully.");
 
             this.switchTo('loading');
             if (!this.vm.isAppLoadedOk) {

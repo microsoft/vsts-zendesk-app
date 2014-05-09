@@ -3,7 +3,7 @@
     "parameters": {
       "vso_account": {
         "label": "Visual Studio Online account name",
-        "helpText": "Enter your Visual Studio Online account name like in https://<account_name>.visualstudio.com. You should create a Zendesk service hook in Visual Studio online for each project you wish to integrate work item comments in Zendesk. Learn more visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+        "helpText": "Enter your Visual Studio Online account (https://<account_name>.visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
       },
       "vso_tag": {
         "label": "Visual Studio Online work item tag",
