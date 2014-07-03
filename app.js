@@ -16,6 +16,7 @@
     var
         INSTALLATION_ID = 0,    //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
+        VSO_API_VERSION = "1.0-preview.1",
         TAG_PREFIX = "vso_wi_",
         VSO_TO_ZENDESK_COMMENT_BEGINS_WITH = "Zendesk:",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
@@ -974,7 +975,12 @@
                 dataType: 'json',
             }, options);
 
-            requestOptions.headers = _.extend({ 'Authorization': this.authString() }, options ? options.headers : {});
+            var fixedHeaders = {
+                'Authorization': this.authString(),
+                'Accept': helpers.fmt("application/json;api-version=%@", VSO_API_VERSION)
+            };
+
+            requestOptions.headers = _.extend(fixedHeaders, options ? options.headers : {});
             return requestOptions;
         },
 
