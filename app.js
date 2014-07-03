@@ -18,7 +18,6 @@
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
         VSO_API_VERSION = "1.0-preview",
         TAG_PREFIX = "vso_wi_",
-        VSO_TO_ZENDESK_COMMENT_BEGINS_WITH = "Zendesk:",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
             "System.WorkItemType": { summary: true, details: true },
             "System.Title": { summary: false, details: true },
