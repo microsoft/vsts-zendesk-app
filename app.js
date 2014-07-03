@@ -8,7 +8,7 @@
 // 
 //********************************************************* 
 
-(function (window) {
+(function () {
     'use strict';
 
     //#region Constants
@@ -16,7 +16,7 @@
     var
         INSTALLATION_ID = 31144,    //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
-        VSO_API_VERSION = "1.0-preview.1",
+        VSO_API_VERSION = "1.0-preview",
         TAG_PREFIX = "vso_wi_",
         VSO_TO_ZENDESK_COMMENT_BEGINS_WITH = "Zendesk:",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
@@ -106,7 +106,9 @@
             // Requests
             'getVsoUserProfileWithTwa.done': 'onGetVsoUserProfileWithTwaDone',
             'getVsoProjectsWithTwa.done': 'onGetVsoProjectsWithTwaDone',
+            'getVsoProjects.done': 'onGetVsoProjectsDone',
             'getVsoFieldsWithTwa.done': 'onGetVsoFieldsWithTwaDone',
+            'getVsoFields.done': 'onGetVsoFieldsDone',
 
             //New workitem dialog
             'click .newWorkItem': 'onNewWorkItemClick',
@@ -212,9 +214,11 @@
 
             getVsoUserProfileWithTwa: function () { return this.vsoRequest('/_api/_common/getUserProfile?__v=5'); },
             getVsoProjectsWithTwa: function () { return this.vsoRequest('/_api/_wit/teamProjects?__v=5'); },
+            getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
             getVsoProjectWorkItemTypes: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_api/_wit/workItemTypes?__v=5', projectName)); },
             getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest('/_apis/wit/queries', { project: projectName, $depth: 1000 }); },
             getVsoFieldsWithTwa: function () { return this.vsoRequest('/_api/_wit/fields?__v=5'); },
+            getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'resourceLinks' }); },
             getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'resourceLinks' }); },
             getVsoWorkItemQueryResult: function (queryId) {
@@ -254,28 +258,6 @@
                         'X-HTTP-Method-Override': 'PATCH',
                     },
                 });
-            },
-
-            createVsoSubscription: function (projId) {
-                return this.vsoRequest('/_apis/hooks/subscriptions', undefined, {
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        "eventType": "workitem.commented",
-                        "consumerId": "zendesk",
-                        "consumerActionId": "createPrivateComment",
-                        "publisherId": "tfs",
-                        "publisherInputs": {
-                            "commentPattern": VSO_TO_ZENDESK_COMMENT_BEGINS_WITH,
-                            "projectId": projId,
-                        },
-                        "consumerInputs": {
-                            "accountName": this.currentAccount().subdomain(),
-                            "username": this.setting('zendesk_username'),
-                            "apiToken": this.setting('zendesk_api_token')
-                        }
-                    })
-                });
             }
         },
 
@@ -292,12 +274,31 @@
             }.bind(this));
         },
 
+        onGetVsoProjectsDone: function (projects) {
+            this.vm.projects = _.map(projects.value, function (project) {
+                return {
+                    id: project.id,
+                    name: project.name,
+                    workItemTypes: []
+                };
+            }.bind(this));
+        },
+
         onGetVsoFieldsWithTwaDone: function (data) {
             this.vm.fields = _.map(data.__wrappedArray, function (field) {
                 return {
                     refName: field.referenceName,
                     name: field.name,
                     id: field.id
+                };
+            });
+        },
+
+        onGetVsoFieldsDone: function (data) {
+            this.vm.fields = _.map(data.value, function (field) {
+                return {
+                    refName: field.referenceName,
+                    name: field.name,
                 };
             });
         },
@@ -323,7 +324,7 @@
         onGetLinkedVsoWorkItemsDone: function (data) {
             this._vm.workItems = data;
             _.each(this._vm.workItems, function (workItem) {
-                workItem.title = helpers.fmt("%@: %@", workItem.id, _.find(workItem.fields, function (f) { return f.field.refName == "System.Title"; }).value);
+                workItem.title = helpers.fmt("%@: %@", workItem.id, this.getWorkItemFieldValue(workItem, "System.Title"));
                 helpers.fmt("https://%@.zendesk.com/agent/#/tickets/%@", this.currentAccount().subdomain(), this.ticket().id());
             }.bind(this));
             this.drawWorkItems();
@@ -353,8 +354,8 @@
                     //Initialize global data
                     this.vm.fieldSettings = JSON.parse(this.setting('vso_field_settings') || DEFAULT_FIELD_SETTINGS);
                     this.when(
-                        this.ajax('getVsoProjectsWithTwa'),
-                        this.ajax('getVsoFieldsWithTwa'),
+                        this.ajax('getVsoProjects'),
+                        this.ajax('getVsoFields'),
                         this.ajax('getVsoUserProfileWithTwa')
                     ).done(function () {
                         this.vm.isAppLoadedOk = true;
@@ -580,7 +581,6 @@
 
         onLinkQueryButtonClick: function () {
             var $modal = this.$('#linkModal');
-            var projId = $modal.find('#project').val();
             var queryId = $modal.find('#query').val();
 
             var _drawQueryResults = function (results, countQueryItemsResult) {
@@ -760,9 +760,6 @@
                 if (this.checked) { text += "\r\n[%@]".fmt(this.value); }
             });
 
-            var name = this.currentUser().name();
-            var msg = [this.I18n.t('notify.message', { name: name }), text].join("\n\r\n\r");
-
             this.showSpinnerInModal($modal);
 
             //Refresh linked VSO work items
@@ -778,7 +775,7 @@
 
                 this.ajax('updateMultipleVsoWorkItem', updatePayload)
                 .done(function () {
-                    var ticketMsg = [this.I18n.t('notify.message', { name: name }), text].join("\n\r\n\r");
+                    var ticketMsg = [this.I18n.t('notify.message', { name: this.currentUser().name() }), text].join("\n\r\n\r");
                     this.ajax('addPrivateCommentToTicket', ticketMsg);
                     services.notify(this.I18n.t('notify.notification'));
                     this.closeModal($modal);
@@ -987,13 +984,11 @@
         attachRestrictedFieldsToWorkItem: function (workItem, type) {
             var fields = _.compact(_.map(this.vm.fieldSettings, function (value, key) {
                 if (value[type]) {
-                    var workItemField = _.find(workItem.fields, function (f) { return f.field.refName == key; });
-
-                    if (workItemField) {
+                    if (_.has(workItem.fields, key)) {
                         return {
                             refName: key,
                             name: _.find(this.vm.fields, function (f) { return f.refName == key; }).name,
-                            value: workItemField.value
+                            value: workItem.fields[key]
                         };
                     }
                 }
@@ -1018,9 +1013,9 @@
         },
 
         getWorkItemFieldValue: function (workItem, fieldRefName) {
-            var field = _.find(workItem.fields, function (f) { return f.field.refName == fieldRefName; });
+            var field = workItem.fields[fieldRefName];
 
-            return field ? field.value : "";
+            return field || "";
         },
 
         hasFieldDefined: function (workItemType, fieldRefName) {
@@ -1130,4 +1125,4 @@
 
         //#endregion
     };
-}(this));
+}());
