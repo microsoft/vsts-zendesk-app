@@ -221,3 +221,11 @@ hr.split {
 .attachments img {
   width: 30px; 
 }
+
+#settings {
+    table-layout: fixed;
+}
+
+#settings tbody tr td:first-of-type {
+    word-wrap: break-word;
+}
