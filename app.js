@@ -230,11 +230,14 @@
                     })
                 });
             },
-            createVsoWorkItem: function (data) {
-                return this.vsoRequest('/_apis/wit/workItems', undefined, {
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data)
+            createVsoWorkItem: function (projectId, witName, data) {
+                return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName), undefined, {
+                    type: 'PUT',
+                    contentType: 'application/json-patch+json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'X-HTTP-Method-Override': 'PATCH',
+                    }
                 });
             },
 
@@ -412,7 +415,7 @@
             var workItemType = this.getWorkItemTypeByName(project, $modal.find('#type').val());
 
             this.showSpinnerInModal($modal);
-            
+
             this.loadWorkItemTemplate(project.id, workItemType.name)
             .done(function () {
                 //Check if we have severity
@@ -453,51 +456,41 @@
             var attachments = [];
             $modal.find('.attachments input').each(function () { if (this.checked) { attachments.push(this.value); } });
 
-            //Required fields for all project/work item types
-            var data = {
-                fields: [
-                    { field: { refName: "System.AreaPath" }, value: proj.name },
-                    { field: { refName: "System.IterationPath" }, value: proj.name },
-                    { field: { refName: "System.WorkItemType" }, value: workItemType.name },
-                    { field: { refName: "System.Title" }, value: summary },
-                    { field: { refName: "System.Description" }, value: description },
-                ]
-            };
+            var operations = [].concat(
+                this.buildAddWorkItemFieldOperation("System.Title", summary),
+                this.buildAddWorkItemFieldOperation("System.Description", description));
 
-            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
-                data.fields.push({ field: { refName: "Microsoft.VSTS.Common.Severity" }, value: $modal.find('#severity').val() });
-            }
 
-            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
-                data.fields.push({ field: { refName: "Microsoft.VSTS.TCM.ReproSteps" }, value: description });
-            }
+            //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
+            //    data.fields.push({ field: { refName: "Microsoft.VSTS.Common.Severity" }, value: $modal.find('#severity').val() });
+            //}
 
+            //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
+            //    data.fields.push({ field: { refName: "Microsoft.VSTS.TCM.ReproSteps" }, value: description });
+            //}
+
+            //Set tag
             if (this.setting("vso_tag")) {
-                data.fields.push({ field: { refName: "System.Tags" }, value: this.setting("vso_tag") });
+                operations.push(this.buildAddWorkItemFieldOperation("System.Tags", this.setting("vso_tag")));
             }
 
-            //Concat configured fields for work item type
-            data.fields = data.fields.concat(this.getAutomaticFields(proj.processTemplateName, workItemType));
+            //Add hyperlink to ticket url
+            operations.push(
+                this.buildAddWorkItemHyperlinkOperation(
+                    this.buildTicketLinkUrl(),
+                    VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id()));
 
-            //Add Links
-            data.resourceLinks = [
-                {
-                    type: "hyperlink",
-                    location: this.buildTicketLinkUrl(),
-                    name: VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id()
-                }
-            ].concat(
-                _.map(attachments, function (att) {
-                    return {
-                        type: "hyperlink",
-                        location: att,
-                        name: VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id()
-                    };
-                }.bind(this)));
+            //Add hyperlinks to attachments
+            operations = operations.concat(
+                    _.map(attachments, function (att) {
+                        return this.buildAddWorkItemHyperlinkOperation(
+                            att,
+                            VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
+                    }.bind(this)));
 
             this.showSpinnerInModal($modal);
 
-            this.ajax('createVsoWorkItem', data)
+            this.ajax('createVsoWorkItem', proj.id, workItemType.name, { operations: operations })
                 .done(function (data) {
                     var newWorkItemId = data.id;
                     //sanity check due tfs returning 200 ok  but with exception
@@ -572,7 +565,7 @@
             $modal.find('.search-section').hide();
         },
 
-        onLinkVsoProjectChange: function (e, ui) {
+        onLinkVsoProjectChange: function () {
             var $modal = this.$('#linkModal');
             var projId = $modal.find('#project').val();
 
@@ -1028,7 +1021,9 @@
         },
 
         hasFieldDefined: function (workItemType, fieldRefName) {
-            if (!workItemType.template) { throw "Invalid operation: cannot determine if there is a field in a WIT without its template being fetch first." };
+            if (!workItemType.template) {
+                throw "Invalid operation: cannot determine if there is a field in a WIT without its template being fetch first.";
+            }
 
             return _.has(workItemType.template.fields, fieldRefName);
         },
@@ -1093,6 +1088,26 @@
 
         restrictToAllowedWorkItems: function (wits) {
             return _.filter(wits, function (wit) { return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name); });
+        },
+
+        buildAddWorkItemFieldOperation: function (fieldName, value) {
+            return {
+                operation: "add",
+                path: helpers.fmt("/fields/%@", fieldName),
+                value: value
+            };
+        },
+
+        buildAddWorkItemHyperlinkOperation: function (url, name) {
+            return {
+                operation: "add",
+                path: "/relations/-",
+                value: {
+                    rel: "Hyperlink",
+                    url: url,
+                    attributes: { "Name": name }
+                }
+            };
         },
 
         getAutomaticFields: function (processTemplateName, workItemType) {
