@@ -214,7 +214,8 @@
             getVsoUserProfileWithTwa: function () { return this.vsoRequest('/_api/_common/getUserProfile?__v=5'); },
             getVsoProjectsWithTwa: function () { return this.vsoRequest('/_api/_wit/teamProjects?__v=5'); },
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
-            getVsoProjectWorkItemTypes: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_api/_wit/workItemTypes?__v=5', projectName)); },
+            getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/workitemtypes', projectId)); },
+            getVsoWorkItemTemplate: function (projectId, witName) { return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName)); },
             getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest('/_apis/wit/queries', { project: projectName, $depth: 1000 }); },
             getVsoFieldsWithTwa: function () { return this.vsoRequest('/_api/_wit/fields?__v=5'); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
@@ -388,7 +389,7 @@
             }.bind(this));
         },
 
-        onNewVsoProjectChange: function (e, ui) {
+        onNewVsoProjectChange: function () {
             var $modal = this.$('#newWorkItemModal');
             var projId = $modal.find('#project').val();
 
@@ -405,17 +406,26 @@
             }.bind(this));
         },
 
-        onNewVsoWorkItemTypeChange: function (e, ui) {
+        onNewVsoWorkItemTypeChange: function () {
             var $modal = this.$('#newWorkItemModal');
             var project = this.getProjectById($modal.find('#project').val());
-            var workItemType = this.getWorkItemTypeById(project, $modal.find('#type').val());
+            var workItemType = this.getWorkItemTypeByName(project, $modal.find('#type').val());
 
-            //Check if we have severity
-            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
-                $modal.find('.severityInput').show();
-            } else {
-                $modal.find('.severityInput').hide();
-            }
+            this.showSpinnerInModal($modal);
+            
+            this.loadWorkItemTemplate(project.id, workItemType.name)
+            .done(function () {
+                //Check if we have severity
+                if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
+                    $modal.find('.severityInput').show();
+                } else {
+                    $modal.find('.severityInput').hide();
+                }
+                this.hideSpinnerInModal($modal);
+            }.bind(this))
+            .fail(function (jqXHR) {
+                this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR));
+            }.bind(this));
         },
 
         onNewCopyDescriptionClick: function (event) {
@@ -431,7 +441,7 @@
             if (!proj) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errProjRequired")); }
 
             //check work item type
-            var workItemType = this.getWorkItemTypeById(proj, $modal.find('#type').val());
+            var workItemType = this.getWorkItemTypeByName(proj, $modal.find('#type').val());
             if (!workItemType) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errWorkItemTypeRequired")); }
 
             //check summary
@@ -1003,8 +1013,8 @@
             return _.find(this.vm.projects, function (proj) { return proj.id == id; });
         },
 
-        getWorkItemTypeById: function (project, id) {
-            return _.find(project.workItemTypes, function (wit) { return wit.id == id; });
+        getWorkItemTypeByName: function (project, name) {
+            return _.find(project.workItemTypes, function (wit) { return wit.name == name; });
         },
 
         getFieldByFieldRefName: function (fieldRefName) {
@@ -1018,8 +1028,9 @@
         },
 
         hasFieldDefined: function (workItemType, fieldRefName) {
-            var field = this.getFieldByFieldRefName(fieldRefName);
-            return _.contains(workItemType.fields, field.id);
+            if (!workItemType.template) { throw "Invalid operation: cannot determine if there is a field in a WIT without its template being fetch first." };
+
+            return _.has(workItemType.template.fields, fieldRefName);
         },
 
         linkTicket: function (workItemId) {
@@ -1054,9 +1065,19 @@
             if (project.metadataLoaded === true) { return this.promise(function (done) { done(); }); }
 
             //Let's load project metdata
-            return this.ajax('getVsoProjectWorkItemTypes', project.name).done(function (data) {
-                project.workItemTypes = this.restrictToAllowedWorkItems(data.__wrappedArray);
+            return this.ajax('getVsoProjectWorkItemTypes', project.id).done(function (data) {
+                project.workItemTypes = this.restrictToAllowedWorkItems(data.value);
                 project.metadataLoaded = true;
+            }.bind(this));
+        },
+
+        loadWorkItemTemplate: function (projectId, witName) {
+            var project = this.getProjectById(projectId);
+            var wit = this.getWorkItemTypeByName(project, witName);
+            if (wit.template) { return this.promise(function (done) { done(); }); }
+
+            return this.ajax('getVsoWorkItemTemplate', project.id, witName).done(function (data) {
+                wit.template = data;
             }.bind(this));
         },
 
