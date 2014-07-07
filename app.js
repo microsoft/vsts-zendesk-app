@@ -216,20 +216,12 @@
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
             getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/workitemtypes', projectId)); },
             getVsoWorkItemTemplate: function (projectId, witName) { return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName)); },
-            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest('/_apis/wit/queries', { project: projectName, $depth: 1000 }); },
+            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/queries', projectName), { $depth: 1000 }); },
             getVsoFieldsWithTwa: function () { return this.vsoRequest('/_api/_wit/fields?__v=5'); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
-            getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'resourceLinks' }); },
-            getVsoWorkItemQueryResult: function (queryId) {
-                return this.vsoRequest('/_apis/wit/queryResults', undefined, {
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        id: queryId
-                    })
-                });
-            },
+            getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'relations' }); },
+            getVsoWorkItemQueryResult: function (projectName, queryId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/wiql/%@', projectName, queryId)); },
             createVsoWorkItem: function (projectId, witName, data) {
                 return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName), undefined, {
                     type: 'PUT',
@@ -583,6 +575,7 @@
 
         onLinkQueryButtonClick: function () {
             var $modal = this.$('#linkModal');
+            var projId = $modal.find('#project').val();
             var queryId = $modal.find('#query').val();
 
             var _drawQueryResults = function (results, countQueryItemsResult) {
@@ -601,16 +594,17 @@
             }.bind(this);
 
             this.showSpinnerInModal($modal);
-            this.ajax('getVsoWorkItemQueryResult', queryId)
+
+            this.ajax('getVsoWorkItemQueryResult', this.getProjectById(projId).name, queryId)
                 .done(function (data) {
 
-                    if (data.results.length === 0) {
+                    if (data.workItems.length === 0) {
                         return _drawQueryResults([], 0);
                     }
 
-                    var ids = _.pluck(_.first(data.results, 200), "sourceId").join(',');
+                    var ids = _.pluck(_.first(data.workItems, 200), "id").join(',');
                     this.ajax('getVsoWorkItems', ids).done(function (results) {
-                        _drawQueryResults(results.value, data.results.length);
+                        _drawQueryResults(results.value, data.workItems.length);
                     });
                 }.bind(this))
                 .fail(function (jqXHR, textStatus, errorThrown) {
@@ -861,19 +855,19 @@
             var project = this.getProjectById(projectId);
 
             var _drawNode = function (node, prefix) {
-                if (node.type == "query") {
-                    return "<option value='%@'>%@ %@</option>".fmt(node.id, prefix, node.name);
-                }
-
-                //it's a folder
-                if (node.type == "folder") {
+                //It's a folder
+                if (node.isFolder) {
                     return "<optgroup label='%@ %@'>%@</optgroup>".fmt(
                        prefix,
                         node.name,
-                        _.reduce(node.value, function (options, childNode, ix) {
+                        _.reduce(node.children, function (options, childNode, ix) {
                             return "%@%@".fmt(options, _drawNode(childNode, prefix + (ix + 1) + "."));
                         }, ""));
                 }
+
+                //It's a query
+                return "<option value='%@'>%@ %@</option>".fmt(node.id, prefix, node.name);
+
             }.bind(this);
 
             select.html(_.reduce(project.queries, function (options, query, ix) {
