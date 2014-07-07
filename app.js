@@ -25,59 +25,8 @@
         }),
         VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
         VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-        VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
+        VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"];
 
-        VSO_WI_TYPES_INCLUDE_FIELDS = {
-            "SCRUM": {
-                "Bug": [
-                    { field: { refName: "System.State" }, value: "New" },
-                    { field: { refName: "System.Reason" }, value: "New defect reported" },
-                ],
-                "Product Backlog Item": [
-                    { field: { refName: "System.State" }, value: "New" },
-                    { field: { refName: "System.Reason" }, value: "New backlog item" }
-                ]
-            },
-            "MSF": {
-                "Bug": [
-                    { field: { refName: "System.State" }, value: "Active" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                    { field: { refName: "Microsoft.VSTS.Common.ActivatedBy" }, valueReader: "getUserName" }
-                ],
-                "Issue": [
-                    { field: { refName: "System.State" }, value: "Active" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                    { field: { refName: "Microsoft.VSTS.Common.ActivatedBy" }, valueReader: "getUserName" }
-                ],
-                "User Story": [
-                    { field: { refName: "System.State" }, value: "New" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                ]
-            },
-            "CMMI": {
-                "Bug": [
-                    { field: { refName: "System.State" }, value: "Proposed" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                    { field: { refName: "Microsoft.VSTS.Common.Priority" }, value: "2" },
-                    { field: { refName: "Microsoft.VSTS.Common.Triage" }, value: "Pending" },
-                ],
-                "Issue": [
-                    { field: { refName: "System.State" }, value: "Proposed" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                    { field: { refName: "Microsoft.VSTS.Common.Priority" }, value: "2" },
-                    { field: { refName: "Microsoft.VSTS.Common.Triage" }, value: "Pending" },
-                ],
-                "Requirement": [
-                    { field: { refName: "System.State" }, value: "Proposed" },
-                    { field: { refName: "System.Reason" }, value: "New" },
-                    { field: { refName: "Microsoft.VSTS.Common.Priority" }, value: "2" },
-                    { field: { refName: "Microsoft.VSTS.Common.Triage" }, value: "Pending" },
-                    { field: { refName: "Microsoft.VSTS.CMMI.RequirementType" }, value: "Functional" },
-                    { field: { refName: "Microsoft.VSTS.CMMI.Committed" }, value: "No" },
-                    { field: { refName: "Microsoft.VSTS.CMMI.UserAcceptanceTest" }, value: "Not Ready" }
-                ]
-            }
-        };
     //#endregion
 
     return {
@@ -92,21 +41,13 @@
             isAppLoadedOk: false
         },
 
-        //Readers for specific work item fields
-        workItemFieldValueReaders: {
-            getUserName: function () { return this.vm.userProfile.DisplayName; }
-        },
-
         //#region Events Declaration
         events: {
             // App
             'app.activated': 'onAppActivated',
 
             // Requests
-            'getVsoUserProfileWithTwa.done': 'onGetVsoUserProfileWithTwaDone',
-            'getVsoProjectsWithTwa.done': 'onGetVsoProjectsWithTwaDone',
             'getVsoProjects.done': 'onGetVsoProjectsDone',
-            'getVsoFieldsWithTwa.done': 'onGetVsoFieldsWithTwaDone',
             'getVsoFields.done': 'onGetVsoFieldsDone',
 
             //New workitem dialog
@@ -211,13 +152,10 @@
                 };
             },
 
-            getVsoUserProfileWithTwa: function () { return this.vsoRequest('/_api/_common/getUserProfile?__v=5'); },
-            getVsoProjectsWithTwa: function () { return this.vsoRequest('/_api/_wit/teamProjects?__v=5'); },
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
             getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/workitemtypes', projectId)); },
             getVsoWorkItemTemplate: function (projectId, witName) { return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName)); },
             getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/queries', projectName), { $depth: 1000 }); },
-            getVsoFieldsWithTwa: function () { return this.vsoRequest('/_api/_wit/fields?__v=5'); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
             getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'relations' }); },
@@ -256,19 +194,6 @@
             }
         },
 
-        onGetVsoUserProfileWithTwaDone: function (data) { this.vm.userProfile = data.identity; },
-
-        onGetVsoProjectsWithTwaDone: function (projects) {
-            this.vm.projects = _.map(projects.__wrappedArray, function (project) {
-                return {
-                    id: project.guid,
-                    name: project.name,
-                    workItemTypes: [],
-                    processTemplateName: this.getProcessTemplateName(project)
-                };
-            }.bind(this));
-        },
-
         onGetVsoProjectsDone: function (projects) {
             this.vm.projects = _.map(projects.value, function (project) {
                 return {
@@ -277,16 +202,6 @@
                     workItemTypes: []
                 };
             }.bind(this));
-        },
-
-        onGetVsoFieldsWithTwaDone: function (data) {
-            this.vm.fields = _.map(data.__wrappedArray, function (field) {
-                return {
-                    refName: field.referenceName,
-                    name: field.name,
-                    id: field.id
-                };
-            });
         },
 
         onGetVsoFieldsDone: function (data) {
@@ -350,8 +265,7 @@
                     this.vm.fieldSettings = JSON.parse(this.setting('vso_field_settings') || DEFAULT_FIELD_SETTINGS);
                     this.when(
                         this.ajax('getVsoProjects'),
-                        this.ajax('getVsoFields'),
-                        this.ajax('getVsoUserProfileWithTwa')
+                        this.ajax('getVsoFields')
                     ).done(function () {
                         this.vm.isAppLoadedOk = true;
                         this.getLinkedVsoWorkItems();
@@ -1097,26 +1011,6 @@
             };
         },
 
-        getAutomaticFields: function (processTemplateName, workItemType) {
-
-            var autoFields = [];
-            _.each(VSO_WI_TYPES_INCLUDE_FIELDS[processTemplateName][workItemType.name] || [], function (field) {
-
-                var refName = field.field.refName;
-                if (this.hasFieldDefined(workItemType, refName)) {
-                    var addField = { field: { refName: refName }, value: field.value };
-
-                    if (field.valueReader) {
-                        addField.value = this.workItemFieldValueReaders[field.valueReader].call(this);
-                    }
-
-                    autoFields.push(addField);
-                }
-            }.bind(this));
-
-            return autoFields;
-        },
-
         getAjaxErrorMessage: function (jqXHR, errMsg) {
             errMsg = errMsg || this.I18n.t("errorAjax");
 
@@ -1130,20 +1024,7 @@
 
             var detail = this.I18n.t("errorServer").fmt(jqXHR.status, jqXHR.statusText, serverErrMsg);
             return errMsg + " " + detail;
-        },
-
-        getProcessTemplateName: function (project) {
-
-            if (_.contains(project.workItemTypes, "Product Backlog Item")) {
-                return "SCRUM";
-            } else if (_.contains(project.workItemTypes, "Change Request")) {
-                return "CMMI";
-            } else if (_.contains(project.workItemTypes, "User Story")) {
-                return "MSF";
-            } else {
-                throw "Process template not supported!";
-            }
-        },
+        }
 
         //#endregion
     };
