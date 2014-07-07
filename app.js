@@ -219,7 +219,7 @@
             getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest('/_apis/wit/queries', { project: projectName, $depth: 1000 }); },
             getVsoFieldsWithTwa: function () { return this.vsoRequest('/_api/_wit/fields?__v=5'); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
-            getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'resourceLinks' }); },
+            getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
             getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'resourceLinks' }); },
             getVsoWorkItemQueryResult: function (queryId) {
                 return this.vsoRequest('/_apis/wit/queryResults', undefined, {
@@ -244,7 +244,7 @@
             updateVsoWorkItem: function (workItemId, data) {
                 return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), undefined, {
                     type: 'PUT',
-                    contentType: 'application/json',
+                    contentType: 'application/json-patch+json',
                     data: JSON.stringify(data),
                     headers: {
                         'X-HTTP-Method-Override': 'PATCH',
@@ -635,8 +635,8 @@
             var _updateWorkItem = function (workItem) {
 
                 //Let's check if there is already a link in the WI returned data
-                var currentLink = _.find(workItem.resourceLinks || [], function (link) {
-                    if (link.type === "hyperlink" && link.name === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
+                var currentLink = _.find(workItem.relations || [], function (link) {
+                    if (link.rel.toLowerCase() === "hyperlink" && link.attributes["Name"] === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
                         return link;
                     }
                 }.bind(this));
@@ -651,18 +651,11 @@
                     _finish();
                 } else {
 
-                    var data = {
-                        id: workItemId,
-                        rev: workItem.rev,
-                        resourceLinks: [{
-                            type: "hyperlink",
-                            location: this.buildTicketLinkUrl(),
-                            comment: "",
-                            name: VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id()
-                        }]
-                    };
+                    var addLinkOperation = this.buildAddWorkItemHyperlinkOperation(
+                            this.buildTicketLinkUrl(),
+                            VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id());
 
-                    this.ajax('updateVsoWorkItem', workItemId, data)
+                    this.ajax('updateVsoWorkItem', workItemId, { operations: [addLinkOperation] })
                         .done(function () {
                             _finish();
                         }.bind(this))
@@ -702,10 +695,10 @@
             var _updateWorkItem = function (workItem) {
 
                 //Let's get the set of links related to this workitem
-                var linksToRemove = _.filter(workItem.resourceLinks, function (link) {
-                    return link.type === 'hyperlink' &&
-                        (link.name === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
-                        link.name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
+                var linksToRemove = _.filter(workItem.relations, function (link) {
+                    return link.rel.toLowerCase() === 'hyperlink' &&
+                        (link.attributes["Name"] === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
+                        link.attributes["Name"] === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
                 }.bind(this));
 
                 var _finish = function () {
