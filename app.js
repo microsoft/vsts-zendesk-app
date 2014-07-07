@@ -447,7 +447,7 @@
             $modal.find('.modal-body').html(this.renderTemplate('details', workItem));
         },
 
-        onLinkClick: function (event) {
+        onLinkClick: function () {
             var $modal = this.$('#linkModal').modal();
             $modal.find('.modal-footer button').removeAttr('disabled');
             $modal.find('.modal-body').html(this.renderTemplate('link'));
@@ -458,7 +458,7 @@
             projectCombo.change();
         },
 
-        onLinkSearchClick: function (event) {
+        onLinkSearchClick: function () {
             var $modal = this.$('#linkModal');
             $modal.find(".search-section").show();
         },
