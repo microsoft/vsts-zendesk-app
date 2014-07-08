@@ -329,9 +329,12 @@
             .done(function () {
                 //Check if we have severity
                 if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
+                    this.$('#severity', $modal).val(workItemType.template.fields["Microsoft.VSTS.Common.Severity"]);
                     $modal.find('.severityInput').show();
+
                 } else {
                     $modal.find('.severityInput').hide();
+                    this.$('#severity', $modal).val('');
                 }
                 this.hideSpinnerInModal($modal);
             }.bind(this))
@@ -369,14 +372,14 @@
                 this.buildPatchToAddWorkItemField("System.Title", summary),
                 this.buildPatchToAddWorkItemField("System.Description", description));
 
-
-            //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
-            //    data.fields.push({ field: { refName: "Microsoft.VSTS.Common.Severity" }, value: $modal.find('#severity').val() });
-            //}
+            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
+                operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('#severity').val()));
+            }
 
             //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
-            //    data.fields.push({ field: { refName: "Microsoft.VSTS.TCM.ReproSteps" }, value: description });
-            //}
+            if (workItemType.name === "Bug") {
+                operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
+            }
 
             //Set tag
             if (this.setting("vso_tag")) {
