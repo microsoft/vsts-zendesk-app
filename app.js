@@ -16,7 +16,10 @@
     var
         INSTALLATION_ID = 31144,    //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
-        VSO_API_VERSION = "1.0-preview",
+        VSO_API_DEFAULT_VERSION = "1.0-preview.1",
+        VSO_API_RESOURCE_VERSION = {
+            "wit": "1.0-preview.2"
+        },
         TAG_PREFIX = "vso_wi_",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
             "System.WorkItemType": { summary: true, details: true },
@@ -618,13 +621,15 @@
                 if (linksToRemove.length === 0) {
                     _finish();
                 } else {
-                    var data = {
-                        id: workItemId,
-                        rev: workItem.rev,
-                        resourceLinks: _.map(linksToRemove, function (link) { return _.extend(link, { "updateType": "delete" }); })
-                    };
+                    var operations = [{ operation: "test", path: "/fields/System.Rev", value: workItem.rev }]
+                        .concat(_.map(linksToRemove, function (link) {
+                            return {
+                                operation: "remove",
+                                path: helpers.fmt("/relations/%@", _.indexOf(workItem.relations, link))
+                            };
+                        }));
 
-                    this.ajax('updateVsoWorkItem', workItemId, data)
+                    this.ajax('updateVsoWorkItem', workItemId, { operations: operations })
                         .done(function () { _finish(); })
                         .fail(function (jqXHR) {
                             this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR, this.I18n.t('modals.unlink.errUnlink')));
@@ -877,11 +882,17 @@
 
             var fixedHeaders = {
                 'Authorization': this.authString(),
-                'Accept': helpers.fmt("application/json;api-version=%@", VSO_API_VERSION)
+                'Accept': helpers.fmt("application/json;api-version=%@", this.getVsoResourceVersion(url))
             };
 
             requestOptions.headers = _.extend(fixedHeaders, options ? options.headers : {});
             return requestOptions;
+        },
+
+        getVsoResourceVersion: function (url) {
+            var resource = url.split("/_apis/")[1].split("/")[0];
+            return VSO_API_RESOURCE_VERSION[resource] || VSO_API_DEFAULT_VERSION;
+
         },
 
         attachRestrictedFieldsToWorkItem: function (workItem, type) {
