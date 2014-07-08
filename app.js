@@ -14,7 +14,7 @@
     //#region Constants
 
     var
-        INSTALLATION_ID = 31144,    //For dev purposes, when using Zat, set this to your current installation id
+        INSTALLATION_ID = 0,    //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
         VSO_API_DEFAULT_VERSION = "1.0-preview.1",
         VSO_API_RESOURCE_VERSION = {
@@ -550,7 +550,7 @@
 
                 //Let's check if there is already a link in the WI returned data
                 var currentLink = _.find(workItem.relations || [], function (link) {
-                    if (link.rel.toLowerCase() === "hyperlink" && link.attributes["Name"] === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
+                    if (link.rel.toLowerCase() === "hyperlink" && link.attributes.Name === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
                         return link;
                     }
                 }.bind(this));
@@ -611,8 +611,8 @@
                 //Let's get the set of links related to this workitem
                 var linksToRemove = _.filter(workItem.relations, function (link) {
                     return link.rel.toLowerCase() === 'hyperlink' &&
-                        (link.attributes["Name"] === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
-                        link.attributes["Name"] === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
+                        (link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
+                        link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
                 }.bind(this));
 
                 var _finish = function () {
