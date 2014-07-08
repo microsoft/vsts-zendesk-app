@@ -670,15 +670,16 @@
             //Refresh linked VSO work items
             this.getLinkedVsoWorkItems(function (workItems) {
 
-                var updatePayload = _.map(workItems, function (workItem) {
-                    return {
-                        id: workItem.id,
-                        rev: workItem.rev,
-                        fields: [{ field: { refName: 'System.History' }, value: text }]
-                    };
+                //create an array of promises with individual request
+                var requests = _.map(workItems, function (workItem) {
+                    return this.ajax('updateVsoWorkItem', workItem.id, {
+                        operations: [this.buildPatchToAddWorkItemField("System.History", text)]
+                    });
                 }.bind(this));
 
-                this.ajax('updateMultipleVsoWorkItem', updatePayload)
+                //wait for all requests to complete
+                this.when.apply(this, requests)
+                //this.ajax('updateMultipleVsoWorkItem', updatePayload)
                 .done(function () {
                     var ticketMsg = [this.I18n.t('notify.message', { name: this.currentUser().name() }), text].join("\n\r\n\r");
                     this.ajax('addPrivateCommentToTicket', ticketMsg);
@@ -1019,7 +1020,7 @@
             };
         },
 
-        buildPatchToRemoveWorkItemHyperlink: function(workItem, link) {
+        buildPatchToRemoveWorkItemHyperlink: function (workItem, link) {
             return {
                 operation: "remove",
                 path: helpers.fmt("/relations/%@", _.indexOf(workItem.relations, link))
