@@ -366,8 +366,8 @@
             $modal.find('.attachments input').each(function () { if (this.checked) { attachments.push(this.value); } });
 
             var operations = [].concat(
-                this.buildAddWorkItemFieldOperation("System.Title", summary),
-                this.buildAddWorkItemFieldOperation("System.Description", description));
+                this.buildPatchToAddWorkItemField("System.Title", summary),
+                this.buildPatchToAddWorkItemField("System.Description", description));
 
 
             //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
@@ -380,19 +380,19 @@
 
             //Set tag
             if (this.setting("vso_tag")) {
-                operations.push(this.buildAddWorkItemFieldOperation("System.Tags", this.setting("vso_tag")));
+                operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
             }
 
             //Add hyperlink to ticket url
             operations.push(
-                this.buildAddWorkItemHyperlinkOperation(
+                this.buildPatchToAddWorkItemHyperlink(
                     this.buildTicketLinkUrl(),
                     VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id()));
 
             //Add hyperlinks to attachments
             operations = operations.concat(
                     _.map(attachments, function (att) {
-                        return this.buildAddWorkItemHyperlinkOperation(
+                        return this.buildPatchToAddWorkItemHyperlink(
                             att,
                             VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
                     }.bind(this)));
@@ -562,7 +562,7 @@
                     _finish();
                 } else {
 
-                    var addLinkOperation = this.buildAddWorkItemHyperlinkOperation(
+                    var addLinkOperation = this.buildPatchToAddWorkItemHyperlink(
                             this.buildTicketLinkUrl(),
                             VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id());
 
@@ -623,11 +623,8 @@
                 } else {
                     var operations = [{ operation: "test", path: "/fields/System.Rev", value: workItem.rev }]
                         .concat(_.map(linksToRemove, function (link) {
-                            return {
-                                operation: "remove",
-                                path: helpers.fmt("/relations/%@", _.indexOf(workItem.relations, link))
-                            };
-                        }));
+                            return this.buildPatchToRemoveWorkItemHyperlink(workItem, link);
+                        }.bind(this)));
 
                     this.ajax('updateVsoWorkItem', workItemId, { operations: operations })
                         .done(function () { _finish(); })
@@ -1002,7 +999,7 @@
             return _.filter(wits, function (wit) { return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name); });
         },
 
-        buildAddWorkItemFieldOperation: function (fieldName, value) {
+        buildPatchToAddWorkItemField: function (fieldName, value) {
             return {
                 operation: "add",
                 path: helpers.fmt("/fields/%@", fieldName),
@@ -1010,7 +1007,7 @@
             };
         },
 
-        buildAddWorkItemHyperlinkOperation: function (url, name) {
+        buildPatchToAddWorkItemHyperlink: function (url, name) {
             return {
                 operation: "add",
                 path: "/relations/-",
@@ -1019,6 +1016,13 @@
                     url: url,
                     attributes: { "Name": name }
                 }
+            };
+        },
+
+        buildPatchToRemoveWorkItemHyperlink: function(workItem, link) {
+            return {
+                operation: "remove",
+                path: helpers.fmt("/relations/%@", _.indexOf(workItem.relations, link))
             };
         },
 
