@@ -607,12 +607,15 @@
             var workItemId = $modal.attr('data-id');
 
             var _updateWorkItem = function (workItem) {
+                //Calculate the positions of links to remove
+                var posOfLinksToRemove = [];
 
-                //Let's get the set of links related to this workitem
-                var linksToRemove = _.filter(workItem.relations, function (link) {
-                    return link.rel.toLowerCase() === 'hyperlink' &&
+                _.each(workItem.relations, function (link, idx) {
+                    if (link.rel.toLowerCase() === 'hyperlink' &&
                         (link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
-                        link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id());
+                        link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id())) {
+                        posOfLinksToRemove.push(idx - posOfLinksToRemove.length);
+                    }
                 }.bind(this));
 
                 var _finish = function () {
@@ -621,12 +624,12 @@
                     this.getLinkedVsoWorkItems(function () { this.closeModal($modal); }.bind(this));
                 }.bind(this);
 
-                if (linksToRemove.length === 0) {
+                if (posOfLinksToRemove.length === 0) {
                     _finish();
                 } else {
                     var operations = [{ operation: "test", path: "/fields/System.Rev", value: workItem.rev }]
-                        .concat(_.map(linksToRemove, function (link) {
-                            return this.buildPatchToRemoveWorkItemHyperlink(workItem, link);
+                        .concat(_.map(posOfLinksToRemove, function (pos) {
+                            return this.buildPatchToRemoveWorkItemHyperlink(pos);
                         }.bind(this)));
 
                     this.ajax('updateVsoWorkItem', workItemId, { operations: operations })
@@ -1023,10 +1026,10 @@
             };
         },
 
-        buildPatchToRemoveWorkItemHyperlink: function (workItem, link) {
+        buildPatchToRemoveWorkItemHyperlink: function (pos) {
             return {
                 operation: "remove",
-                path: helpers.fmt("/relations/%@", _.indexOf(workItem.relations, link))
+                path: helpers.fmt("/relations/%@", pos)
             };
         },
 
