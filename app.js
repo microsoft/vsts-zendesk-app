@@ -157,7 +157,6 @@
 
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
             getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/workitemtypes', projectId)); },
-            getVsoWorkItemTemplate: function (projectId, witName) { return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName)); },
             getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/queries', projectName), { $depth: 1000 }); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
@@ -323,24 +322,12 @@
             var project = this.getProjectById($modal.find('#project').val());
             var workItemType = this.getWorkItemTypeByName(project, $modal.find('#type').val());
 
-            this.showSpinnerInModal($modal);
-
-            this.loadWorkItemTemplate(project.id, workItemType.name)
-            .done(function () {
-                //Check if we have severity
-                if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
-                    this.$('#severity', $modal).val(workItemType.template.fields["Microsoft.VSTS.Common.Severity"]);
-                    $modal.find('.severityInput').show();
-
-                } else {
-                    $modal.find('.severityInput').hide();
-                    this.$('#severity', $modal).val('');
-                }
-                this.hideSpinnerInModal($modal);
-            }.bind(this))
-            .fail(function (jqXHR) {
-                this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR));
-            }.bind(this));
+            //Check if we have severity
+            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
+                $modal.find('.severityInput').show();
+            } else {
+                $modal.find('.severityInput').hide();
+            }
         },
 
         onNewCopyDescriptionClick: function (event) {
@@ -376,8 +363,7 @@
                 operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('#severity').val()));
             }
 
-            //if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
-            if (workItemType.name === "Bug") {
+            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
                 operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
             }
 
@@ -402,7 +388,7 @@
 
             this.showSpinnerInModal($modal);
 
-            this.ajax('createVsoWorkItem', proj.id, workItemType.name, { operations: operations })
+            this.ajax('createVsoWorkItem', proj.id, workItemType.name, operations)
                 .done(function (data) {
                     var newWorkItemId = data.id;
                     //sanity check due tfs returning 200 ok  but with exception
@@ -569,7 +555,7 @@
                             this.buildTicketLinkUrl(),
                             VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id());
 
-                    this.ajax('updateVsoWorkItem', workItemId, { operations: [addLinkOperation] })
+                    this.ajax('updateVsoWorkItem', workItemId, [addLinkOperation])
                         .done(function () {
                             _finish();
                         }.bind(this))
@@ -627,12 +613,12 @@
                 if (posOfLinksToRemove.length === 0) {
                     _finish();
                 } else {
-                    var operations = [{ operation: "test", path: "/fields/System.Rev", value: workItem.rev }]
+                    var operations = [{ op: "test", path: "/rev", value: workItem.rev }]
                         .concat(_.map(posOfLinksToRemove, function (pos) {
                             return this.buildPatchToRemoveWorkItemHyperlink(pos);
                         }.bind(this)));
 
-                    this.ajax('updateVsoWorkItem', workItemId, { operations: operations })
+                    this.ajax('updateVsoWorkItem', workItemId, operations)
                         .done(function () { _finish(); })
                         .fail(function (jqXHR) {
                             this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR, this.I18n.t('modals.unlink.errUnlink')));
@@ -678,9 +664,7 @@
 
                 //create an array of promises with individual request
                 var requests = _.map(workItems, function (workItem) {
-                    return this.ajax('updateVsoWorkItem', workItem.id, {
-                        operations: [this.buildPatchToAddWorkItemField("System.History", text)]
-                    });
+                    return this.ajax('updateVsoWorkItem', workItem.id, [this.buildPatchToAddWorkItemField("System.History", text)]);
                 }.bind(this));
 
                 //wait for all requests to complete
@@ -937,11 +921,9 @@
         },
 
         hasFieldDefined: function (workItemType, fieldRefName) {
-            if (!workItemType.template) {
-                throw "Invalid operation: cannot determine if there is a field in a WIT without its template being fetch first.";
-            }
-
-            return _.has(workItemType.template.fields, fieldRefName);
+            return _.some(workItemType.fieldInstances, function (fieldInstance) {
+                return fieldInstance.field.referenceName === fieldRefName;
+            });
         },
 
         linkTicket: function (workItemId) {
@@ -982,16 +964,6 @@
             }.bind(this));
         },
 
-        loadWorkItemTemplate: function (projectId, witName) {
-            var project = this.getProjectById(projectId);
-            var wit = this.getWorkItemTypeByName(project, witName);
-            if (wit.template) { return this.promise(function (done) { done(); }); }
-
-            return this.ajax('getVsoWorkItemTemplate', project.id, witName).done(function (data) {
-                wit.template = data;
-            }.bind(this));
-        },
-
         loadProjectWorkItemQueries: function (projectId) {
             var project = this.getProjectById(projectId);
             if (project.queries) { return this.promise(function (done) { done(); }); }
@@ -1008,7 +980,7 @@
 
         buildPatchToAddWorkItemField: function (fieldName, value) {
             return {
-                operation: "add",
+                op: "add",
                 path: helpers.fmt("/fields/%@", fieldName),
                 value: value
             };
@@ -1016,7 +988,7 @@
 
         buildPatchToAddWorkItemHyperlink: function (url, name) {
             return {
-                operation: "add",
+                op: "add",
                 path: "/relations/-",
                 value: {
                     rel: "Hyperlink",
@@ -1028,7 +1000,7 @@
 
         buildPatchToRemoveWorkItemHyperlink: function (pos) {
             return {
-                operation: "remove",
+                op: "remove",
                 path: helpers.fmt("/relations/%@", pos)
             };
         },
