@@ -3,7 +3,7 @@
   {{#each workItems}}
     <div class='workItem' data-id='{{id}}'>
       <h4>
-        <a href="{{webUrl}}" target="_blank">{{title}}</a>
+        <a href="{{html}}" target="_blank">{{title}}</a>
         <a class='action showDetails' title='{{t "workItems.showDetails"}}'>
           <i class='icon-eye-open'></i>
         </a>
