@@ -156,14 +156,14 @@
             },
 
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
-            getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/workitemtypes', projectId)); },
-            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/queries', projectName), { $depth: 1000 }); },
+            getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/workitemtypes', projectId)); },
+            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/queries', projectName), { $depth: 1000 }); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
             getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'relations' }); },
-            getVsoWorkItemQueryResult: function (projectName, queryId) { return this.vsoRequest(helpers.fmt('/_apis/wit/%@/wiql/%@', projectName, queryId)); },
+            getVsoWorkItemQueryResult: function (projectName, queryId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/wiql/%@', projectName, queryId)); },
             createVsoWorkItem: function (projectId, witName, data) {
-                return this.vsoRequest(helpers.fmt('/_apis/wit/workitems/$%@.%@', projectId, witName), undefined, {
+                return this.vsoRequest(helpers.fmt('/%@/_apis/wit/workitems/$%@', projectId, witName), undefined, {
                     type: 'PUT',
                     contentType: 'application/json-patch+json',
                     data: JSON.stringify(data),
