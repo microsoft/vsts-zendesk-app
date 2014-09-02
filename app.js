@@ -157,7 +157,7 @@
 
             getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
             getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/workitemtypes', projectId)); },
-            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/queries', projectName), { $depth: 1000 }); },
+            getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/queries', projectName), { $depth: 2 }); },
             getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
             getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
             getVsoWorkItem: function (workItemId) { return this.vsoRequest(helpers.fmt('/_apis/wit/workItems/%@', workItemId), { '$expand': 'relations' }); },
@@ -228,16 +228,39 @@
                 return;
             }
 
-            this.ajax('getVsoWorkItems', vsoLinkedIds.join(','))
-                .done(function (data) { finish(data.value); })
-                .fail(function (jqXHR) { this.displayMain(this.getAjaxErrorMessage(jqXHR)); }.bind(this));
+            //make a call for each linked wi to get the data we need (web URL is not returned from the getVsoWorkItems)
+            var requests = _.map(vsoLinkedIds, function (workItemId) {
+                return this.ajax('getVsoWorkItem', workItemId);
+            }.bind(this));
+
+            //wait for all requests to complete
+            this.when.apply(this, requests)
+            .done(function () {
+                var linkedWorkItems = [];
+                if (vsoLinkedIds.length === 1) {
+                    //just one wi: arguments is [data, status, jqXhr]
+                    linkedWorkItems.push(arguments[0]);
+                } else {
+                    //more than 1 wi: arguments is [[data1, status1, jqXhr1],...]
+                    for (var i = 0; i < arguments.length; i++) {
+                        linkedWorkItems.push(arguments[i][0]);
+                    }
+                }
+                finish(linkedWorkItems);
+            }.bind(this))
+            .fail(function (jqXHR) {
+                this.displayMain(this.getAjaxErrorMessage(jqXHR));
+            }.bind(this));
+
+            //this.ajax('getVsoWorkItems', vsoLinkedIds.join(','))
+            //    .done(function (data) { finish(data.value); })
+            //    .fail(function (jqXHR) { this.displayMain(this.getAjaxErrorMessage(jqXHR)); }.bind(this));
         },
 
         onGetLinkedVsoWorkItemsDone: function (data) {
             this._vm.workItems = data;
             _.each(this._vm.workItems, function (workItem) {
                 workItem.title = helpers.fmt("%@: %@", workItem.id, this.getWorkItemFieldValue(workItem, "System.Title"));
-                helpers.fmt("https://%@.zendesk.com/agent/#/tickets/%@", this.currentAccount().subdomain(), this.ticket().id());
             }.bind(this));
             this.drawWorkItems();
         },
@@ -536,7 +559,7 @@
 
                 //Let's check if there is already a link in the WI returned data
                 var currentLink = _.find(workItem.relations || [], function (link) {
-                    if (link.rel.toLowerCase() === "hyperlink" && link.attributes.Name === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
+                    if (link.rel.toLowerCase() === "hyperlink" && link.attributes.name === (VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id())) {
                         return link;
                     }
                 }.bind(this));
@@ -598,8 +621,8 @@
 
                 _.each(workItem.relations, function (link, idx) {
                     if (link.rel.toLowerCase() === 'hyperlink' &&
-                        (link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
-                        link.attributes.Name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id())) {
+                        (link.attributes.name === VSO_ZENDESK_LINK_TO_TICKET_PREFIX + this.ticket().id() ||
+                        link.attributes.name === VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + this.ticket().id())) {
                         posOfLinksToRemove.push(idx - posOfLinksToRemove.length);
                     }
                 }.bind(this));
@@ -993,7 +1016,7 @@
                 value: {
                     rel: "Hyperlink",
                     url: url,
-                    attributes: { "Name": name }
+                    attributes: { "name": name }
                 }
             };
         },
