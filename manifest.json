@@ -9,7 +9,7 @@
   "defaultLocale": "en",
   "singleInstall": true,
   "frameworkVersion": "1.0",
-  "version": "1.0",
+  "version": "0.2",
   "parameters": [
     {
       "name": "vso_account",
