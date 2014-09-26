@@ -4,14 +4,16 @@
     <p class='alert alert-error errors' style='display:none'>
     </p>
 
-    <div class='control-group project-selection'>
-        <label class='control-label project-selection' for='project'>{{t "modals.new.fields.project"}}:</label>
-        <div class='controls'>
-            <select id='project' class='input-large inputVsoProject'>
-            </select>
-        </div>
-    </div>
+
     <div class='newForm'>
+        <div class='control-group'>
+            <label class='control-label' for='project'>{{t "modals.new.fields.project"}}:</label>
+            <div class='controls'>
+                <select id='project' class='input-xlarge inputVsoProject'>
+                </select>
+            </div>
+        </div>
+        
         <div class='control-group'>
             <label class='control-label' for='type'>{{t "modals.new.fields.type"}}</label>
             <div class='controls'>
