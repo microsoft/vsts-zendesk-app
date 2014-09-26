@@ -110,15 +110,13 @@
     "notification": "The linked Visual Studio Online work items have been notified",
     "workItemCreated": "Work item created in Visual Studio Online with id: %@",
     "workItemLinked": "Ticket linked with Visual Studio Online work item with id: %@",
-    "workItemUnlinked": "Ticket unlinked of Visual Studio Online work item with id: %@"
+    "workItemUnlinked": "Ticket unlinked of Visual Studio Online work item with id: %@",
+    "credentialsSaved": "Saved Successfully"
   },
   "finishSetup": "You didn't finish your app configuration: your Visual Studio Online account is empty.",
   "errorAjax": "There was an error contacting with the server. Please try again",
   "errorServer": "[%@ %@: %@]",
   "errorLoadingApp": "Something went wrong while loading the app. Confirm that your Visual Studio Online alternate credentials are correct by clicking in the user icon.",
   "errorLoadingWorkItems": "Something went wrong while loading working items. Click the refresh icon to try again.",
-  "errorOoops" : "Ooops!",
-  "growl": {
-    "unhandledField": "The field {{name}} is not handled! The work item creation process won't work."
-  }
+  "errorOoops" : "Ooops!"
 }

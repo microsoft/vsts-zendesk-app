@@ -728,7 +728,7 @@
             }
 
             this.authString(vso_username, vso_password);
-            services.notify("Saved Successfully.");
+            services.notify(this.I18n.t('notify.credentialsSaved'));
 
             this.switchTo('loading');
             if (!this.vm.isAppLoadedOk) {
