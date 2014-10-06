@@ -945,7 +945,7 @@
 
         hasFieldDefined: function (workItemType, fieldRefName) {
             return _.some(workItemType.fieldInstances, function (fieldInstance) {
-                return fieldInstance.field.referenceName === fieldRefName;
+                return fieldInstance.referenceName === fieldRefName;
             });
         },
 
