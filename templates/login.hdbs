@@ -15,13 +15,13 @@
             <div class="control-group">
                 <label class="control-label" for="vso_username">{{t "login.username"}}</label>
                 <div class="controls">
-                    <input type="text" id="vso_username" class="input">
+                    <input type="text" id="vso_username" class="vso_username input">
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label" for="vso_password">{{t "login.password"}}</label>
                 <div class="controls">
-                    <input type="password" id="vso_password" class="input">
+                    <input type="password" id="vso_password" class="vso_password input">
                 </div>
             </div>
             <div class="control-group">

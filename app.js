@@ -55,10 +55,10 @@
 
             //New workitem dialog
             'click .newWorkItem': 'onNewWorkItemClick',
-            'change #newWorkItemModal .inputVsoProject': 'onNewVsoProjectChange',
-            'change #newWorkItemModal #type': 'onNewVsoWorkItemTypeChange',
-            'click #newWorkItemModal .copyDescription': 'onNewCopyDescriptionClick',
-            'click #newWorkItemModal .accept': 'onNewWorkItemAcceptClick',
+            'change .newWorkItemModal .inputVsoProject': 'onNewVsoProjectChange',
+            'change .newWorkItemModal .type': 'onNewVsoWorkItemTypeChange',
+            'click .newWorkItemModal .copyDescription': 'onNewCopyDescriptionClick',
+            'click .newWorkItemModal .accept': 'onNewWorkItemAcceptClick',
 
             //Admin side pane
             'click .cog': 'onCogClick',
@@ -70,23 +70,23 @@
 
             //Link work item dialog
             'click .link': 'onLinkClick',
-            'change #linkModal #project': 'onLinkVsoProjectChange',
-            'click #linkModal button.query': 'onLinkQueryButtonClick',
-            'click #linkModal button.accept': 'onLinkAcceptClick',
-            'click #linkModal button.search': 'onLinkSearchClick',
-            'click #linkModal a.workItemResult': 'onLinkResultClick',
+            'change .linkModal .project': 'onLinkVsoProjectChange',
+            'click .linkModal button.queryBtn': 'onLinkQueryButtonClick',
+            'click .linkModal button.accept': 'onLinkAcceptClick',
+            'click .linkModal button.search': 'onLinkSearchClick',
+            'click .linkModal a.workItemResult': 'onLinkResultClick',
 
             //Unlink click
             'click .unlink': 'onUnlinkClick',
-            'click #unlinkModal .accept': 'onUnlinkAcceptClick',
+            'click .unlinkModal .accept': 'onUnlinkAcceptClick',
 
             //Notify dialog
             'click .notify': 'onNotifyClick',
-            'click #notifyModal .accept': 'onNotifyAcceptClick',
-            'click #notifyModal .copyLastComment': 'onCopyLastCommentClick',
+            'click .notifyModal .accept': 'onNotifyAcceptClick',
+            'click .notifyModal .copyLastComment': 'onCopyLastCommentClick',
 
             //Refresh work items
-            'click #refreshWorkItemsLink': 'onRefreshWorkItemClick',
+            'click .refreshWorkItemsLink': 'onRefreshWorkItemClick',
 
             //Login
             'click .user,.user-link': 'onUserIconClick',
@@ -307,16 +307,16 @@
         // UI
         onNewWorkItemClick: function () {
 
-            var $modal = this.$('#newWorkItemModal').modal();
+            var $modal = this.$('.newWorkItemModal').modal();
             $modal.find('.modal-body').html(this.renderTemplate('loading'));
             this.ajax('getComments').done(function (data) {
                 var attachments = _.flatten(_.map(data.comments, function (comment) {
                     return comment.attachments || [];
                 }), true);
                 $modal.find('.modal-body').html(this.renderTemplate('new', { attachments: attachments }));
-                $modal.find('#summary').val(this.ticket().subject());
+                $modal.find('.summary').val(this.ticket().subject());
 
-                var projectCombo = $modal.find('#project');
+                var projectCombo = $modal.find('.project');
                 this.fillComboWithProjects(projectCombo);
                 projectCombo.change();
 
@@ -324,15 +324,15 @@
         },
 
         onNewVsoProjectChange: function () {
-            var $modal = this.$('#newWorkItemModal');
-            var projId = $modal.find('#project').val();
+            var $modal = this.$('.newWorkItemModal');
+            var projId = $modal.find('.project').val();
 
             this.showSpinnerInModal($modal);
 
             this.loadProjectWorkItemTypes(projId)
             .done(function () {
-                this.drawTypesList($modal.find('#type'), projId);
-                $modal.find('#type').change();
+                this.drawTypesList($modal.find('.type'), projId);
+                $modal.find('.type').change();
                 this.hideSpinnerInModal($modal);
             }.bind(this))
             .fail(function (jqXHR) {
@@ -341,9 +341,9 @@
         },
 
         onNewVsoWorkItemTypeChange: function () {
-            var $modal = this.$('#newWorkItemModal');
-            var project = this.getProjectById($modal.find('#project').val());
-            var workItemType = this.getWorkItemTypeByName(project, $modal.find('#type').val());
+            var $modal = this.$('.newWorkItemModal');
+            var project = this.getProjectById($modal.find('.project').val());
+            var workItemType = this.getWorkItemTypeByName(project, $modal.find('.type').val());
 
             //Check if we have severity
             if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity")) {
@@ -355,25 +355,25 @@
 
         onNewCopyDescriptionClick: function (event) {
             event.preventDefault();
-            this.$('#newWorkItemModal #description').val(this.ticket().description());
+            this.$('.newWorkItemModal .description').val(this.ticket().description());
         },
 
         onNewWorkItemAcceptClick: function () {
-            var $modal = this.$('#newWorkItemModal').modal();
+            var $modal = this.$('.newWorkItemModal').modal();
 
             //check project
-            var proj = this.getProjectById($modal.find('#project').val());
+            var proj = this.getProjectById($modal.find('.project').val());
             if (!proj) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errProjRequired")); }
 
             //check work item type
-            var workItemType = this.getWorkItemTypeByName(proj, $modal.find('#type').val());
+            var workItemType = this.getWorkItemTypeByName(proj, $modal.find('.type').val());
             if (!workItemType) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errWorkItemTypeRequired")); }
 
             //check summary
-            var summary = $modal.find("#summary").val();
+            var summary = $modal.find(".summary").val();
             if (!summary) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errSummaryRequired")); }
 
-            var description = $modal.find("#description").val();
+            var description = $modal.find(".description").val();
 
             var attachments = [];
             $modal.find('.attachments input').each(function () { if (this.checked) { attachments.push(this.value); } });
@@ -382,8 +382,8 @@
                 this.buildPatchToAddWorkItemField("System.Title", summary),
                 this.buildPatchToAddWorkItemField("System.Description", description));
 
-            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
-                operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('#severity').val()));
+            if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('.severity').val()) {
+                operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('.severity').val()));
             }
 
             if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
@@ -452,7 +452,7 @@
         },
 
         onShowDetailsClick: function (event) {
-            var $modal = this.$('#detailsModal').modal();
+            var $modal = this.$('.detailsModal').modal();
             $modal.find('.modal-header h3').html(this.I18n.t('modals.details.loading'));
             $modal.find('.modal-body').html(this.renderTemplate('loading'));
             var id = this.$(event.target).closest('.workItem').attr('data-id');
@@ -463,38 +463,38 @@
         },
 
         onLinkClick: function () {
-            var $modal = this.$('#linkModal').modal();
+            var $modal = this.$('.linkModal').modal();
             $modal.find('.modal-footer button').removeAttr('disabled');
             $modal.find('.modal-body').html(this.renderTemplate('link'));
             $modal.find("button.search").show();
 
-            var projectCombo = $modal.find('#project');
+            var projectCombo = $modal.find('.project');
             this.fillComboWithProjects(projectCombo);
             projectCombo.change();
         },
 
         onLinkSearchClick: function () {
-            var $modal = this.$('#linkModal');
+            var $modal = this.$('.linkModal');
             $modal.find(".search-section").show();
         },
 
         onLinkResultClick: function (event) {
             event.preventDefault();
-            var $modal = this.$('#linkModal');
+            var $modal = this.$('.linkModal');
             var id = this.$(event.target).closest('.workItemResult').attr('data-id');
-            $modal.find('#inputVsoWorkItemId').val(id);
+            $modal.find('.inputVsoWorkItemId').val(id);
             $modal.find('.search-section').hide();
         },
 
         onLinkVsoProjectChange: function () {
-            var $modal = this.$('#linkModal');
-            var projId = $modal.find('#project').val();
+            var $modal = this.$('.linkModal');
+            var projId = $modal.find('.project').val();
 
             this.showSpinnerInModal($modal);
 
             this.loadProjectWorkItemQueries(projId)
             .done(function () {
-                this.drawQueriesList($modal.find('#query'), projId);
+                this.drawQueriesList($modal.find('.query'), projId);
                 this.hideSpinnerInModal($modal);
             }.bind(this))
             .fail(function (jqXHR) {
@@ -503,9 +503,9 @@
         },
 
         onLinkQueryButtonClick: function () {
-            var $modal = this.$('#linkModal');
-            var projId = $modal.find('#project').val();
-            var queryId = $modal.find('#query').val();
+            var $modal = this.$('.linkModal');
+            var projId = $modal.find('.project').val();
+            var queryId = $modal.find('.query').val();
 
             var _drawQueryResults = function (results, countQueryItemsResult) {
                 var workItems = _.map(results, function (workItem) {
@@ -543,8 +543,8 @@
         },
 
         onLinkAcceptClick: function (event) {
-            var $modal = this.$('#linkModal');
-            var workItemId = $modal.find('#inputVsoWorkItemId').val();
+            var $modal = this.$('.linkModal');
+            var workItemId = $modal.find('.inputVsoWorkItemId').val();
 
             if (!/^([0-9]+)$/.test(workItemId)) {
                 return this.showErrorInModal($modal, this.I18n.t('modals.link.errWorkItemIdNaN'));
@@ -601,7 +601,7 @@
         onUnlinkClick: function (event) {
             var id = this.$(event.target).closest('.workItem').attr('data-id');
             var workItem = this.getWorkItemById(id);
-            var $modal = this.$('#unlinkModal').modal();
+            var $modal = this.$('.unlinkModal').modal();
             $modal.find('.modal-body').html(this.renderTemplate('unlink'));
             $modal.find('.modal-footer button').removeAttr('disabled');
             $modal.find('.modal-body .confirm').html(this.I18n.t('modals.unlink.text', { name: workItem.title }));
@@ -610,7 +610,7 @@
 
         onUnlinkAcceptClick: function (event) {
             event.preventDefault();
-            var $modal = this.$(event.target).closest('#unlinkModal');
+            var $modal = this.$(event.target).closest('.unlinkModal');
 
             this.showSpinnerInModal($modal);
             var workItemId = $modal.attr('data-id');
@@ -656,7 +656,7 @@
         },
 
         onNotifyClick: function () {
-            var $modal = this.$('#notifyModal');
+            var $modal = this.$('.notifyModal');
             $modal.find('.modal-body').html(this.renderTemplate('loading'));
             $modal.modal();
 
@@ -671,7 +671,7 @@
         },
 
         onNotifyAcceptClick: function () {
-            var $modal = this.$('#notifyModal');
+            var $modal = this.$('.notifyModal');
             var text = $modal.find('textarea').val();
 
             if (!text) { return this.showErrorInModal($modal, this.I18n.t("modals.notify.errCommentRequired")); }
@@ -707,20 +707,20 @@
 
         onCopyLastCommentClick: function (event) {
             event.preventDefault();
-            this.$('#notifyModal').find('textarea').val(this.lastComment);
+            this.$('.notifyModal').find('textarea').val(this.lastComment);
         },
 
         onRefreshWorkItemClick: function (event) {
             event.preventDefault();
-            this.$('workItemsError').hide();
+            this.$('.workItemsError').hide();
             this.switchTo('loading');
             this.getLinkedVsoWorkItems();
         },
 
         onLoginClick: function (event) {
             event.preventDefault();
-            var vso_username = this.$('#vso_username').val();
-            var vso_password = this.$('#vso_password').val();
+            var vso_username = this.$('.vso_username').val();
+            var vso_password = this.$('.vso_password').val();
 
             if (!vso_username || !vso_password) {
                 this.$(".login-form").find('.errors').text(this.I18n.t("login.errRequiredFields")).show();
@@ -757,7 +757,7 @@
                 if (!err) {
                     this.drawWorkItems();
                 } else {
-                    this.$('#workItemsError').show();
+                    this.$('.workItemsError').show();
                 }
             } else {
                 this.$('.cog').toggle(false);

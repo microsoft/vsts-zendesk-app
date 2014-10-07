@@ -47,15 +47,15 @@ hr.split {
   margin-bottom: 10px; 
 }
 
-#linkModal .inputVsoProject {
+.linkModal .inputVsoProject {
   width: 330px; 
 }
 
-#linkModal .results {
+.linkModal .results {
   margin-top: 15px; 
 }
 
-#linkModal #inputVsoWorkItemId {
+.linkModal .inputVsoWorkItemId {
   width: calc(100% - 174px);
   box-sizing: border-box;
   height: 30px;
@@ -63,31 +63,31 @@ hr.split {
   margin-left: 10px; 
 }
 
-#newWorkItemModal {
+.newWorkItemModal {
   width: 750px;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   margin: 0; 
 }
 
-#newWorkItemModal .modal-body {
+.newWorkItemModal .modal-body {
   max-height: 550px; 
 }
 
-#newWorkItemModal #description {
+.newWorkItemModal .description {
   height: 100px; 
 }
 
-#newWorkItemModal #summary {
+.newWorkItemModal .summary {
   width: 530px; 
 }
 
 
-#newWorkItemModal .attachments ul {
+.newWorkItemModal .attachments ul {
   margin: 0px; 
 }
 
-#newWorkItemModal .copyDescription {
+.newWorkItemModal .copyDescription {
   display: block; 
 }
 
@@ -199,18 +199,18 @@ hr.split {
   padding-bottom: 10px; 
 }
 
-#notifyModal textarea {
+.notifyModal textarea {
   width: 100%;
   box-sizing: border-box;
   height: 100px; 
 }
 
-#notifyModal .copyLastComment {
+.notifyModal .copyLastComment {
   display: block;
   margin-bottom: 20px; 
 }
 
-#notifyModal label {
+.notifyModal label {
   margin-bottom: 0.5em; 
 }
 
@@ -222,10 +222,10 @@ hr.split {
   width: 30px; 
 }
 
-#settings {
+.settings {
     table-layout: fixed;
 }
 
-#settings tbody tr td:first-of-type {
+.settings tbody tr td:first-of-type {
     word-wrap: break-word;
 }

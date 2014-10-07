@@ -9,7 +9,7 @@
         <div class='control-group'>
             <label class='control-label' for='project'>{{t "modals.new.fields.project"}}:</label>
             <div class='controls'>
-                <select id='project' class='input-xlarge inputVsoProject'>
+                <select id='project' class='project input-xlarge inputVsoProject'>
                 </select>
             </div>
         </div>
@@ -17,11 +17,11 @@
         <div class='control-group'>
             <label class='control-label' for='type'>{{t "modals.new.fields.type"}}</label>
             <div class='controls'>
-                <select id='type' class='input-xlarge'></select>
+                <select id='type' class='type input-xlarge'></select>
             </div>
         </div>
         <div class='control-group severityInput'>
-            <label class='control-label' for='type'>{{t "modals.new.fields.severity"}}</label>
+            <label class='control-label' for='severity'>{{t "modals.new.fields.severity"}}</label>
             <div class='controls'>
                 <select id='severity' class='input-xlarge'>
                     <option value='1 - Critical'>1 - Critical</option>
@@ -35,14 +35,14 @@
         <div class='control-group'>
             <label class='control-label' for='summary'>{{t "modals.new.fields.summary"}}</label>
             <div class='controls'>
-                <input type='text' id='summary' class='input-xxlarge'>
+                <input type='text' id='summary' class='summary input-xxlarge'>
             </div>
         </div>
 
         <div class='control-group'>
             <label class='control-label' for='description'>{{t "modals.new.fields.description"}}</label>
             <div class='controls'>
-                <textarea id='description' class='input-xxlarge'></textarea>
+                <textarea id='description' class='description input-xxlarge'></textarea>
                 <a href="#" class="copyDescription">{{t "modals.new.copyDescription"}}</a>
             </div>
         </div>
