@@ -54,7 +54,7 @@
                     {{#each attachments}}
                     <li>
                         <label>
-                            <input type='checkbox' value='{{content_url}}'>
+                            <input type='checkbox' value='{{content_url}}' data-file-name='{{file_name}}'>
                                 {{#if thumbnails.length}}
                                 <img src="{{thumbnails.0.content_url}}">
                   {{/if}}
