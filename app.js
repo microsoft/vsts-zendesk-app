@@ -519,13 +519,21 @@
       this.ajax('getVsoWorkItemQueryResult', this.getProjectById(projId).name, queryId)
           .done(function (data) {
 
-            if (data.workItems.length === 0) {
+            var getWorkItemsIdsFromQueryResult = function (result) {
+              if (result.queryType === 'oneHop' || result.queryType === 'tree') {
+                return _.map(result.workItemRelations, function (rel) { return rel.target.id; });
+              } else {
+                return _.pluck(result.workItems, 'id');
+              }
+            };
+
+            var ids = getWorkItemsIdsFromQueryResult(data);
+            if (!ids || ids.length === 0) {
               return drawQueryResults([], 0);
             }
 
-            var ids = _.pluck(_.first(data.workItems, 200), "id").join(',');
-            this.ajax('getVsoWorkItems', ids).done(function (results) {
-              drawQueryResults(results.value, data.workItems.length);
+            this.ajax('getVsoWorkItems', _.first(ids, 200).join(',')).done(function (results) {
+              drawQueryResults(results.value, ids.length);
             });
           }.bind(this))
           .fail(function (jqXHR, textStatus, errorThrown) {
