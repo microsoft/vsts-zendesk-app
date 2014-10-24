@@ -37,6 +37,7 @@
 
     //Global view model shared by all instances
     vm: {
+      accountUrl: null,
       projects: [],
       fields: [],
       fieldSettings: {},
@@ -277,6 +278,9 @@
         if (!(this.setting('vso_account'))) {
           return this.switchTo('finish_setup');
         }
+
+        //set account url
+        this.vm.accountUrl = this.buildAccountUrl();
 
         if (!this.store("auth_token_for_" + this.setting('vso_account'))) {
           return this.switchTo('login');
@@ -864,17 +868,8 @@
     },
 
     vsoUrl: function (url, parameters) {
-      var setting = this.setting('vso_account');
-      var baseUrl = helpers.fmt(VSO_URL_FORMAT, setting);
-      var loweredSetting = setting.toLowerCase();
-
-      if (loweredSetting.indexOf('http://') === 0 || loweredSetting.indexOf('https://') === 0) {
-        baseUrl = setting;
-      }
-
-      baseUrl = (baseUrl[baseUrl.length - 1] === '/') ? baseUrl.slice(0, -1) : baseUrl;
       url = (url[0] === '/') ? url.slice(1) : url;
-      var full = [baseUrl, url].join('/');
+      var full = [this.vm.accountUrl, url].join('/');
       if (parameters) {
         full += '?' + _.map(parameters, function (value, key) {
           return [key, value].join('=');
@@ -1073,8 +1068,29 @@
       }.bind(this));
 
       return attachments;
+    },
+
+    buildAccountUrl: function () {
+      var baseUrl;
+      var setting = this.setting('vso_account');
+      var loweredSetting = setting.toLowerCase();
+
+      if (loweredSetting.indexOf('http://') === 0 || loweredSetting.indexOf('https://') === 0) {
+        baseUrl = setting;
+      } else {
+        baseUrl = helpers.fmt(VSO_URL_FORMAT, setting);
+      }
+
+      baseUrl = (baseUrl[baseUrl.length - 1] === '/') ? baseUrl.slice(0, -1) : baseUrl;
+
+      //check if collection defined
+      if (baseUrl.lastIndexOf('/') <= 'https://'.length) {
+        baseUrl = baseUrl + '/DefaultCollection';
+      }
+
+      return baseUrl;
     }
 
-    //#endregion
-  };
+  //#endregion
+};
 }());
