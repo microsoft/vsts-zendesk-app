@@ -16,10 +16,8 @@
   var
       INSTALLATION_ID = 0,    //For dev purposes, when using Zat, set this to your current installation id
       VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
-      VSO_API_DEFAULT_VERSION = "1.0-preview.1",
-      VSO_API_RESOURCE_VERSION = {
-        "wit": "1.0-preview.2"
-      },
+      VSO_API_DEFAULT_VERSION = "1.0",
+      VSO_API_RESOURCE_VERSION = {},
       TAG_PREFIX = "vso_wi_",
       DEFAULT_FIELD_SETTINGS = JSON.stringify({
         "System.WorkItemType": { summary: true, details: true },
