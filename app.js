@@ -301,7 +301,10 @@
             this.getLinkedVsoWorkItems();
           }.bind(this))
           .fail(function (jqXHR, textStatus, err) {
-            this.switchTo('error_loading_app');
+            this.switchTo('error_loading_app', {
+              invalidAccount: jqXHR.status === 404,
+              accountName: this.setting('vso_account')
+          });
           }.bind(this));
         } else {
           this.getLinkedVsoWorkItems();
