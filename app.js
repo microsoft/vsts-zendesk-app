@@ -71,6 +71,7 @@
       'click .link': 'onLinkClick',
       'change .linkModal .project': 'onLinkVsoProjectChange',
       'click .linkModal button.queryBtn': 'onLinkQueryButtonClick',
+      'click .linkModal button.reloadQueriesBtn': 'onLinkReloadQueriesButtonClick',
       'click .linkModal button.accept': 'onLinkAcceptClick',
       'click .linkModal button.search': 'onLinkSearchClick',
       'click .linkModal a.workItemResult': 'onLinkResultClick',
@@ -481,19 +482,27 @@
     },
 
     onLinkVsoProjectChange: function () {
+      this.loadQueriesList();
+    },
+
+    onLinkReloadQueriesButtonClick: function () {
+      this.loadQueriesList(true);
+    },
+
+    loadQueriesList: function (reload) {
       var $modal = this.$('.linkModal');
       var projId = $modal.find('.project').val();
 
       this.showSpinnerInModal($modal);
 
-      this.loadProjectWorkItemQueries(projId)
+      this.loadProjectWorkItemQueries(projId, reload)
       .done(function () {
         this.drawQueriesList($modal.find('.query'), projId);
         this.hideSpinnerInModal($modal);
       }.bind(this))
       .fail(function (jqXHR) {
         this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR));
-      }.bind(this));
+      }.bind(this));      
     },
 
     onLinkQueryButtonClick: function () {
@@ -981,16 +990,16 @@
       var project = this.getProjectById(projectId);
       if (project.metadataLoaded === true) { return this.promise(function (done) { done(); }); }
 
-      //Let's load project metdata
+      //Let's load project metadata
       return this.ajax('getVsoProjectWorkItemTypes', project.id).done(function (data) {
         project.workItemTypes = this.restrictToAllowedWorkItems(data.value);
         project.metadataLoaded = true;
       }.bind(this));
     },
 
-    loadProjectWorkItemQueries: function (projectId) {
+    loadProjectWorkItemQueries: function (projectId, reload) {
       var project = this.getProjectById(projectId);
-      if (project.queries) { return this.promise(function (done) { done(); }); }
+      if (project.queries && !reload) { return this.promise(function (done) { done(); }); }
 
       //Let's load project queries
       return this.ajax('getVsoProjectWorkItemQueries', project.name).done(function (data) {

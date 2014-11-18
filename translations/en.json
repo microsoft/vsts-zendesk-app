@@ -65,6 +65,7 @@
       "accept": "Link",
       "search": "Search",
       "query": "Query",
+      "reloadQueries": "Reload queries list",
       "help": "Please enter the the work item id you'd like to link this ticket with. If you don't know the number of the work item to link, click in button 'Search' to help you find out the work item.",
       "searchLegend": "Search",
       "projectLabel": "Project",

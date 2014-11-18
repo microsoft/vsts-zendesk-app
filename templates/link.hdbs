@@ -25,6 +25,9 @@
             <select class='query input-medium'>
             </select>
             <button type="button" class="btn queryBtn">{{t "modals.link.query"}}</button>
+            <button type="button" class="btn btn-mini reloadQueriesBtn"  title='{{t "modals.link.reloadQueries"}}'>
+                <i class="icon-refresh"></i>
+            </button>
         </fieldset>
         <div class='results'>
         </div>
