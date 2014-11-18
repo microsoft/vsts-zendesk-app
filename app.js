@@ -197,13 +197,15 @@
     },
 
     onGetVsoProjectsDone: function (projects) {
-      this.vm.projects = _.map(projects.value, function (project) {
+      this.vm.projects = _.sortBy(_.map(projects.value, function (project) {
         return {
           id: project.id,
           name: project.name,
           workItemTypes: []
         };
-      }.bind(this));
+      }), function (project) {
+        return project.name.toLowerCase();
+      });
     },
 
     onGetVsoFieldsDone: function (data) {
@@ -1098,6 +1100,6 @@
       return baseUrl;
     }
 
-  //#endregion
-};
+    //#endregion
+  };
 }());
