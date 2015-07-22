@@ -120,5 +120,6 @@
   "errorLoadingApp": "Something went wrong while loading the app. Confirm that your Visual Studio Online alternate credentials are correct by clicking in the user icon.",
   "errorInvalidAccount": "The Visual Studio Online account '{{accountName}}' doesn't exist or you don't have access to it. Contact your Zendesk account Administrator to check and review the app settings.",
   "errorLoadingWorkItems": "Something went wrong while loading working items. Click the refresh icon to try again.",
-  "errorOoops" : "Ooops!"
+  "errorOoops": "Ooops!",
+  "errorReadingFieldSettings": "There was an error while reading field settings. Applying default settings."
 }

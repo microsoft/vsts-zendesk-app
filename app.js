@@ -292,7 +292,12 @@
 
         if (!this.vm.isAppLoadedOk) {
           //Initialize global data
-          this.vm.fieldSettings = JSON.parse(this.setting('vso_field_settings') || DEFAULT_FIELD_SETTINGS);
+          try {
+            this.vm.fieldSettings = JSON.parse(this.setting('vso_field_settings') || DEFAULT_FIELD_SETTINGS);
+          } catch (ex) {
+            services.notify(this.I18n.t('errorReadingFieldSettings'), 'alert');
+            this.vm.fieldSettings = JSON.parse(DEFAULT_FIELD_SETTINGS);
+          }
           this.when(
               this.ajax('getVsoProjects'),
               this.ajax('getVsoFields')
@@ -439,10 +444,20 @@
       var fieldSettings = {};
       this.$('tr').each(function () {
         var line = self.$(this);
-        fieldSettings[line.attr('data-refName')] = {
-          summary: line.find('.summary').is(':checked'),
-          details: line.find('.details').is(':checked')
-        };
+        var fieldName = line.attr('data-refName');
+        if (!fieldName) return true; //continue
+
+        var inSummary = line.find('.summary').is(':checked');
+        var inDetails = line.find('.details').is(':checked');
+
+        if (inSummary || inDetails) {
+          fieldSettings[fieldName] = {
+            summary: inSummary,
+            details: inDetails
+          };
+        } else if (fieldSettings[fieldName]) {
+          delete fieldName[fieldName];
+        }
       });
       this.vm.fieldSettings = fieldSettings;
       this.ajax('saveSettings', { vso_field_settings: JSON.stringify(fieldSettings) })
