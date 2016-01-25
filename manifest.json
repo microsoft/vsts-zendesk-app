@@ -8,6 +8,7 @@
   ],
   "defaultLocale": "en",
   "singleInstall": true,
+  "private": true,
   "frameworkVersion": "1.0",
   "version": "0.3.1",
   "parameters": [
