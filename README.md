@@ -20,11 +20,10 @@ See [full instructions](https://www.visualstudio.com/get-started/zendesk-and-vso
 
 ### Install the app to Zendesk
 
-1. Download the latest .zip release from this CodePlex project.
-1. Sign up for a Zendesk account here: [url:https://www.zendesk.com/register]
-1. Once signed in, click the settings icon (gear) in the bottom left hand portion of the screen.
-1. Under *Apps* click Manage.
-1. Click *Upload App*.
+1. Download the latest release .zip file: **[version 0.4.0](https://ms-vsts.gallery.vsassets.io/_apis/public/gallery/publisher/ms-vsts/extension/services-zendesk/1.0.1/assetbyname/apps/vsts-zendesk-app_0.4.0.zip)**
+1. From Zendesk, click the settings icon (gear)
+1. Under **Apps** click Manage.
+1. Click **Upload App**
 1. Give the app a name.
 1. Browse to the location you saved the .zip release and select it.
 1. Provide your Visual Studio Team Services name and decide on a work item tag for Zendesk.
