@@ -16,8 +16,6 @@ Give your customer support team easy access to the information they need. See de
 
 ## How to install and setup
 
-See [full instructions](https://www.visualstudio.com/get-started/zendesk-and-vso-vs)
-
 ### Install the app to Zendesk
 
 1. Download the latest release .zip file: **[version 0.4.0](https://ms-vsts.gallery.vsassets.io/_apis/public/gallery/publisher/ms-vsts/extension/services-zendesk/1.0.1/assetbyname/apps/vsts-zendesk-app_0.4.0.zip)**
@@ -27,6 +25,8 @@ See [full instructions](https://www.visualstudio.com/get-started/zendesk-and-vso
 1. Give the app a name.
 1. Browse to the location you saved the .zip release and select it.
 1. Provide your Visual Studio Team Services name and decide on a work item tag for Zendesk.
+
+See [full instructions](https://www.visualstudio.com/get-started/zendesk-and-vso-vs)
 
 ### Send updates from Visual Studio Team Services to Zendesk
 
