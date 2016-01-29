@@ -31,10 +31,10 @@ See [full instructions](https://www.visualstudio.com/get-started/zendesk-and-vso
 
 ### Send updates from Visual Studio Team Services to Zendesk
 
-1. Open the admin page for the team project in Visual Studio Online
+1. Open the admin page for the team project in Visual Studio Team Services
 2. On the *Service Hooks* tab, run the subscription wizard
 3. Select Zendesk from the subscription wizard
-4. Pick and configure the Visual Studio Online event which will post to Zendesk
+4. Pick and the Visual Studio Online event which will post to Zendesk
 5. Tell Zendesk what to do when the event occurs
 6. Test the service hook subscription and finish the wizard
 
