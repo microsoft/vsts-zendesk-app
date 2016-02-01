@@ -2,8 +2,16 @@
   "app": {
     "parameters": {
       "vso_account": {
-        "label": "Visual Studio Team Services account name",
-        "helpText": "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+        "label": "Global Visual Studio Team Services account name",
+        "helpText": "Enter your default Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+      },
+      "org_field_vso_account": {
+        "label": "Organization Field indicating Visual Studio Team Services account",
+        "helpText": "You override VSTS account for each organization."
+      },
+      "user_field_vso_account": {
+        "label": "User Field indicating Visual Studio Team Services account",
+        "helpText": "You can override VSTS account for each user."
       },
       "vso_tag": {
         "label": "Visual Studio Team Services work item tag",

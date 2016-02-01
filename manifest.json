@@ -18,6 +18,16 @@
       "required": true
     },
     {
+      "name": "org_field_vso_account",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "user_field_vso_account",
+      "type": "text",
+      "required": false
+    },
+    {
       "name": "vso_tag",
       "type": "text",
       "required": false,
