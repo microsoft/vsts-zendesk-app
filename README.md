@@ -1,5 +1,7 @@
 # Visual Studio Team Services App for Zendesk
 
+> Get the latest version of the app: [Download v0.4.0](https://ms-vsts.gallery.vsassets.io/_apis/public/gallery/publisher/ms-vsts/extension/services-zendesk/1.0.1/assetbyname/apps/vsts-zendesk-app_0.4.0.zip)
+
 Unite your customer support and development teams. Quickly create or link work items to tickets, enable efficient two-way communication, and stop using email to check status.
 
 ### Create work items for your engineers right from Zendesk
