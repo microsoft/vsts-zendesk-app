@@ -280,15 +280,29 @@
           return this.switchTo('finish_setup');
         }
 
+        var ticket = this.ticket(),
+          requester = ticket.requester(),
+          organization = ticket.organization(),
+          org_field_vso_account = this.setting('org_field_vso_account'),
+          user_field_vso_account = this.setting('user_field_vso_account');
+
+        var current_vso_account =
+          (user_field_vso_account && requester && requester.customField(user_field_vso_account)) ||
+          (org_field_vso_account && organization && organization.customField(org_field_vso_account)) ||
+          this.setting('vso_account');
+
+        //Private instance view model 
+        this.vmLocal = {
+          vso_account: current_vso_account,
+          workItems: [] 
+        };
+
         //set account url
         this.vm.accountUrl = this.buildAccountUrl();
 
-        if (!this.store("auth_token_for_" + this.setting('vso_account'))) {
-          return this.switchTo('login');
+        if (!this.store("auth_token_for_" + this.vmLocal.vso_account)) {
+          return this.switchTo('login', this.vmLocal);
         }
-
-        //Private instance view model 
-        this.vmLocal = { workItems: [] };
 
         if (!this.vm.isAppLoadedOk) {
           //Initialize global data
@@ -308,7 +322,7 @@
           .fail(function (jqXHR, textStatus, err) {
             this.switchTo('error_loading_app', {
               invalidAccount: jqXHR.status === 404,
-              accountName: this.setting('vso_account')
+              accountName: this.vmLocal.vso_account
           });
           }.bind(this));
         } else {
@@ -782,7 +796,7 @@
     },
 
     onUserIconClick: function () {
-      this.switchTo('login');
+      this.switchTo('login', this.vmLocal);
     },
 
     //#endregion
@@ -909,10 +923,10 @@
 
       if (vso_username && vso_password) {
         var b64 = Base64.encode([vso_username, vso_password].join(':'));
-        this.store('auth_token_for_' + this.setting('vso_account'), b64);
+        this.store('auth_token_for_' + this.vmLocal.vso_account, b64);
       }
 
-      return helpers.fmt("Basic %@", this.store('auth_token_for_' + this.setting('vso_account')));
+      return helpers.fmt("Basic %@", this.store('auth_token_for_' + this.vmLocal.vso_account));
     },
 
     vsoRequest: function (url, parameters, options) {
@@ -1099,7 +1113,7 @@
 
     buildAccountUrl: function () {
       var baseUrl;
-      var setting = this.setting('vso_account');
+      var setting = this.vmLocal.vso_account;
       var loweredSetting = setting.toLowerCase();
 
       if (loweredSetting.indexOf('http://') === 0 || loweredSetting.indexOf('https://') === 0) {

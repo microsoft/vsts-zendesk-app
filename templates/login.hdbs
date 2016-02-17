@@ -3,6 +3,7 @@
         <i class='icon-circle-arrow-left'/>
     </a>
     <h3>{{t "login.title"}}</h3>
+    <div class='help'>{{vso_account}}</div>
     <div class='content'>
         <p>&nbsp;</p>
         <p class="help">{{t "login.help"}}</p>
