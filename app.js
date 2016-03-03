@@ -1,12 +1,12 @@
-//********************************************************* 
-// 
-// Copyright (c) Microsoft. All rights reserved. 
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF 
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY 
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR 
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT. 
-// 
-//********************************************************* 
+//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
 /* global helpers, services, _, Base64 */
 (function () {
   'use strict';
@@ -26,7 +26,8 @@
       }),
       VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
       VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-      VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"];
+      VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
+      VSO_PROJECTS_PAGE_SIZE = 100;
 
   //#endregion
 
@@ -155,7 +156,7 @@
         };
       },
 
-      getVsoProjects: function () { return this.vsoRequest('/_apis/projects'); },
+      getVsoProjects: function (skip) { return this.vsoRequest('/_apis/projects', { $top: VSO_PROJECTS_PAGE_SIZE, $skip: skip || 0 } );},
       getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/workitemtypes', projectId)); },
       getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/queries', projectName), { $depth: 2 }); },
       getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
@@ -197,13 +198,13 @@
     },
 
     onGetVsoProjectsDone: function (projects) {
-      this.vm.projects = _.sortBy(_.map(projects.value, function (project) {
+      this.vm.projects = _.sortBy(this.vm.projects.concat(_.map(projects.value, function (project) {
         return {
           id: project.id,
           name: project.name,
           workItemTypes: []
         };
-      }), function (project) {
+      })), function (project) {
         return project.name.toLowerCase();
       });
     },
@@ -287,7 +288,7 @@
           return this.switchTo('login');
         }
 
-        //Private instance view model 
+        //Private instance view model
         this.vmLocal = { workItems: [] };
 
         if (!this.vm.isAppLoadedOk) {
@@ -298,8 +299,33 @@
             services.notify(this.I18n.t('errorReadingFieldSettings'), 'alert');
             this.vm.fieldSettings = JSON.parse(DEFAULT_FIELD_SETTINGS);
           }
+
+          // Function to get all VSTS projects paginated if needed
+          var getAllVsoProjects = function() {
+            return this.promise(function(done, fail) {
+              var getPage = function (page) {
+                var skip = page * VSO_PROJECTS_PAGE_SIZE;
+                this.ajax('getVsoProjects', skip).done(function (data) {
+                    // If the page is full, get a new page
+                    if (data.count === VSO_PROJECTS_PAGE_SIZE) {
+                      getPage(page + 1);
+                    } else {
+                      done();
+                    }
+                  }).fail(function (xhr, status, err) {
+                    fail(xhr, status, err);
+                  });
+              }.bind(this);
+
+              // Get First page
+              getPage(0);
+
+            }.bind(this));
+          }.bind(this);
+
+
           this.when(
-              this.ajax('getVsoProjects'),
+              getAllVsoProjects(),
               this.ajax('getVsoFields')
           ).done(function () {
             this.vm.isAppLoadedOk = true;
@@ -522,7 +548,7 @@
       }.bind(this))
       .fail(function (jqXHR) {
         this.showErrorInModal($modal, this.getAjaxErrorMessage(jqXHR));
-      }.bind(this));      
+      }.bind(this));
     },
 
     onLinkQueryButtonClick: function () {
