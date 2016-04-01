@@ -1,0 +1,3 @@
+{{#each areas}}
+<option value="{{id}}">{{name}}</option>
+{{/each}}

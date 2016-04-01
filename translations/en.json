@@ -86,6 +86,7 @@
       "errSummaryRequired": "The summary is required",
       "fields": {
         "project": "Project",
+        "area": "Area",
         "type": "Type",
         "summary": "Summary",
         "description": "Description",
