@@ -22,6 +22,17 @@
       "type": "text",
       "required": false,
       "default": "zendesk"
+    },
+    {
+      "name": "allowed_workitems",
+      "type": "text",
+      "required": true,
+      "default": "Bug, Product Backlog Item, User Story, Requirement, Issue"  
+    },
+    {
+      "name": "allowed_rootAreaPath",
+      "type": "text",
+      "required": false
     },  
     {
       "name": "vso_field_settings",

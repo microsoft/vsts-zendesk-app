@@ -31,10 +31,10 @@
             <label class='control-label' for='severity'>{{t "modals.new.fields.severity"}}</label>
             <div class='controls'>
                 <select id='severity' class='input-xlarge'>
-                    <option value='1 - Critical'>1 - Critical</option>
-                    <option value='2 - High'>2 - High</option>
-                    <option value='3 - Medium'>3 - Medium</option>
-                    <option value='4 - Low'>4 - Low</option>
+                    <option value='4 - Low'>{{t "modals.new.severity.low"}}</option>
+                    <option value='3 - Medium'>{{t "modals.new.severity.medium"}}</option>
+                    <option value='2 - High'>{{t "modals.new.severity.high"}}</option>
+                    <option value='1 - Critical'>{{t "modals.new.severity.critical"}}</option>
                 </select>
             </div>
         </div>

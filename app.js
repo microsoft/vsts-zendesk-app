@@ -26,7 +26,7 @@
       }),
       VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
       VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-      VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
+
       VSO_PROJECTS_PAGE_SIZE = 100;
 
   //#endregion
@@ -428,8 +428,8 @@
         operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
       }
 
-      if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('.severity').val()) {
-        operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('.severity').val()));
+      if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
+        operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('#severity').val()));
       }
 
       if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
@@ -1056,12 +1056,15 @@
       
       var loadAreas = this.ajax('getVsoProjectAreas', project.id).done(function (rootArea) {
         var areas = [];
+        var allowedArea = this.setting('allowed_rootAreaPath');
         // Flatten areas to format \Area 1\Area 1.1
         var visitArea = function (area, currentPath) {
           currentPath = currentPath ? currentPath + "\\" : "";
           currentPath = currentPath + area.name;
-          areas.push({ id: area.id, name: currentPath });
           
+          if (!allowedArea || currentPath.indexOf(allowedArea) === 0)
+            areas.push({ id: area.id, name: currentPath });
+
           if (area.children && area.children.length > 0) {
             _.forEach(area.children, function (child) { visitArea(child, currentPath); });
           }
@@ -1091,7 +1094,12 @@
     },
 
     restrictToAllowedWorkItems: function (wits) {
-      return _.filter(wits, function (wit) { return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name); });
+        var allowed_workitems = this.setting('allowed_workitems').split(',').map(function(s) { 
+                    return s.trim();
+                });
+                
+        return _.filter(wits, function (wit) { 
+            return _.contains(allowed_workitems, wit.name); });
     },
 
     buildPatchToAddWorkItemField: function (fieldName, value) {
