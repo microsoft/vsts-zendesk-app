@@ -426,9 +426,6 @@
 
       if (areaId) {
         operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
-
-      if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
-        operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find('#severity').val()));
       }
 
       if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('#severity').val()) {
