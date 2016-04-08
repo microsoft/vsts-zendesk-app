@@ -12,6 +12,10 @@
             "allowed_workitems": {
                 "label": "Visual Studio Team Services work items types allowed",
                 "helpText": "Enter work items types allowed to be created by Zendesk"
+            },
+             "allowed_rootAreaPath": {
+                "label": "Visual Studio Team Services work items area path",
+                "helpText": "Enter the root area path for work items"
             }
         }
     },

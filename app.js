@@ -1059,12 +1059,15 @@
       
       var loadAreas = this.ajax('getVsoProjectAreas', project.id).done(function (rootArea) {
         var areas = [];
+        var allowedArea = this.setting('allowed_rootAreaPath');
         // Flatten areas to format \Area 1\Area 1.1
         var visitArea = function (area, currentPath) {
           currentPath = currentPath ? currentPath + "\\" : "";
           currentPath = currentPath + area.name;
-          areas.push({ id: area.id, name: currentPath });
           
+          if (!allowedArea || currentPath.indexOf(allowedArea) === 0)
+            areas.push({ id: area.id, name: currentPath });
+
           if (area.children && area.children.length > 0) {
             _.forEach(area.children, function (child) { visitArea(child, currentPath); });
           }
