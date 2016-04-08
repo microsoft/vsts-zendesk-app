@@ -8,6 +8,10 @@
             "vso_tag": {
                 "label": "Visual Studio Team Services work item tag",
                 "helpText": "Enter the tag you want to add to each Visual Studio Team Services linked work item. If empty, no tag will be added."
+            },
+            "allowed_workitems": {
+                "label": "Visual Studio Team Services work items types allowed",
+                "helpText": "Enter work items types allowed to be created by Zendesk"
             }
         }
     },
