@@ -98,10 +98,10 @@
             },
             "copyDescription": "Copy the ticket's description",
             "severity": {
-                "critical": "Critical",
-                "high": "High",
-                "medium": "Medium",
-                "low": "Low"
+                "critical": "1- Critical",
+                "high": "2- High",
+                "medium": "3- Medium",
+                "low": "4- Low"
             }
         },
         "notify": {

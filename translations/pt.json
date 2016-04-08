@@ -98,10 +98,10 @@
             },
             "copyDescription": "Copiar descrição do Ticket",
             "severity": {
-                "critical": "Crítico",
-                "high": "Alto",
-                "medium": "Médio",
-                "low": "Baixo"
+                "critical": "1- Crítico",
+                "high": "2- Alto",
+                "medium": "3- Médio",
+                "low": "4- Baixo"
             }
         },
         "notify": {
