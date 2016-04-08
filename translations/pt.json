@@ -1,0 +1,127 @@
+{
+  "app": {
+    "parameters": {
+      "vso_account": {
+        "label": "Visual Studio Team Services account name",
+        "helpText": "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+      },
+      "vso_tag": {
+        "label": "Visual Studio Team Services work item tag",
+        "helpText": "Enter the tag you want to add to each Visual Studio Team Services linked work item. If empty, no tag will be added."
+      }
+    }
+  },
+  "buttons": {
+    "create": "Novo work item",
+    "link": "Vincular a um work item",
+    "notify": "Notificar"
+  },
+  "parts": {
+    "workItems": "Work items vinculados"
+  },
+  "admin": {
+    "title": "Administration",
+    "summary": "Summary",
+    "details": "Details",
+    "settingsSaved": "Your Visual Studio Team Services settings have been saved."
+  },
+  "login": {
+    "title": "Login",
+    "help": "Defina suas credenciais alternativas Visual Studio Team Services.",
+    "username": "Usuário",
+    "password": "Senha",
+    "button": "Login",
+    "errRequiredFields": "Os campos Usuário e Senha são obrigatórios"
+  },
+  "workItems": {
+    "unlink": "Desvincular este item de trabalho",
+    "showDetails": "Mostrar mais detalhes deste item de trabalho",
+    "noWorkItem": "Não há itens de trabalho vinculados a este ticket.",
+    "title": "Itens de trabalho vinculados: {{count}}"
+  },
+  "queryResults": {
+    "columnId": "Id",
+    "columnType": "Tipo",
+    "columnTitle": "Título",
+    "noWorkItem": "A consulta não retornou nenhum item de trabalho.",
+    "returnedWorkItems": "A consulta retornou {{count}} itens de trabalho"
+  },
+  "modals": {
+    "details": {
+      "title": "{{name}} detalhes",
+      "loading": "Carregando detalhes do item de trabalho...",
+      "close": "Fechar"
+    },
+    "unlink": {
+      "title": "Desvincular item de trabalho",
+      "text": "Você deseja desvincular o item <strong>{{name}}</strong> deste ticket?",
+      "close": "Não, não faça nada",
+      "accept": "Sim, desvincule o item de trabalho.",
+      "errUnlink": "Não foi possível desvincular o ticket no Visual Studio Team Services. Por favor, tente novamente."
+    },
+    "link": {
+      "title": "Vincular a um item de trabalho existente",
+      "close": "Voltar",
+      "accept": "Vincular",
+      "search": "Buscar",
+      "query": "Query",
+      "reloadQueries": "Recarregar lista de consulta",
+      "help": "Entre o ID do item de trablho que você gostaria de vincular a este ticket. Se você não souber o Id do item de trabalho para vincular, clique no botão 'Procurar' para pesquisar o item de trabalho correspondente.", 
+      "searchLegend": "Procurar",
+      "projectLabel": "Projeto",
+      "queryLabel": "Consulta",
+      "errWorkItemIdNaN": "O Id do item de trabalho deve ser um número.",
+      "errCannotGetWorkItem": "Um erro aconteceu enquanto pesquisava o item de trabalho. Por favor, tente novamente.", 
+      "errCannotUpdateWorkItem": "Algo aconteceu enquanto atualizava o item de trabalho. Por favor, tente novamente.", 
+      "errAlreadyLinked": "Este ticket já esta vinculado a este item de trabalho."
+    },
+    "new": {
+      "title": "Novo item de trabalho de desenvolvimento",
+      "close": "Voltar",
+      "accept": "Criar Item de Trabalho de Desenvolvimento",
+      "help": "Preencha este formulário para criar um novo item de trabalho para desenvolvimento, vinculado a este ticket.", 
+      "automatic": "Automatic",
+      "errProjRequired": "O projeto é obrigatório",
+      "errWorkItemTypeRequired": "O tipo de work item é obrigatório",
+      "errSummaryRequired": "O título é obrigatório",
+      "fields": {
+        "project": "Projeto",
+        "area": "Area",
+        "type": "Tipo",
+        "summary": "Título",
+        "description": "Descrição",
+        "assignee": "Assignee",
+        "requester": "Requester",
+        "attachments": "Anexos",
+        "severity": "Criticidade",
+        "DevelopmentDate": "Data de desenvolvimento"
+      },
+      "copyDescription": "Copiar descrição do Ticket"
+    },
+    "notify": {
+      "title": "Novo comentário no item de trabalho",
+      "close": "Voltar",
+      "accept": "Comentar no item de trabalho",
+      "placeholder": "Digite o texto para comentar no item de trabalho",
+      "copyLastComment": "Copiar último comentário do Ticket",
+      "errCommentRequired": "O comentário é obrigatório"
+    }
+  },
+  "notify": {
+    "message": "-- Esta notificação será enviada pelo Zendesk para todos os itens de trabalho do Visual Studio Team Services vinculados por {{name}}. --", 
+    "vso": "Comentário do item de trabalho de desenvolvimento {{workItemKey}}", 
+    "notification": "O item de trabalho de desenvolvimento vinculados a este ticket foram notificados",
+    "workItemCreated": "Item de trabalho de desenvolvimento criado com o id: %@", 
+    "workItemLinked": "Ticket vinculado com o item de trabalho de desenvolvimento com id: %@", 
+    "workItemUnlinked": "Ticket desvinculado com o item de trabalho de desenvolvimento com id: %@",
+    "credentialsSaved": "Salvo com sucesso"
+  },
+  "finishSetup": "Você não finalizou a configuração da aplicação: A conta do VSTS esta vazia.", 
+  "errorAjax": "Houve um erro na chamada ao servidor. Por favor, tente novamente", 
+  "errorServer": "[%@ %@: %@]",
+  "errorLoadingApp": "Algo errado aconteceu enquanto carregava a aplicação. Confirme que o login e senha estão corretas clicando no ícone do usuário.",
+  "errorInvalidAccount": "A conta do VSTS '{{accountName}}' não existe ou você não tem permissão de acessá-la. Contate o adminitrador do Zendesk para verificar e rever as configurações do aplicativo.",
+  "errorLoadingWorkItems": "Algo errado ao carregar os itens de trabalho. Clique no ícone Recarregar para tentar novamente",
+  "errorOoops": "Ooops!",
+  "errorReadingFieldSettings": "Houve um erro ao ler as configurações. Aplicando as configurações padrão"
+}
