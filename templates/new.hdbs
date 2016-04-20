@@ -30,7 +30,7 @@
         <div class='control-group severityInput'>
             <label class='control-label' for='severity'>{{t "modals.new.fields.severity"}}</label>
             <div class='controls'>
-                <select id='severity' class='input-xlarge'>
+                <select id='severity' class='severity input-xlarge'>
                     <option value='1 - Critical'>1 - Critical</option>
                     <option value='2 - High'>2 - High</option>
                     <option value='3 - Medium'>3 - Medium</option>
