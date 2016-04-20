@@ -63,7 +63,7 @@
       //Admin side pane
       'click .cog': 'onCogClick',
       'click .closeAdmin': 'onCloseAdminClick',
-      'change .summary,.details': 'onSettingChange',
+      'change .settings .summary, .settings .details': 'onSettingChange',
 
       //Details dialog
       'click .showDetails': 'onShowDetailsClick',
