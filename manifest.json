@@ -10,7 +10,7 @@
   "singleInstall": true,
   "private": true,
   "frameworkVersion": "1.0",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "parameters": [
     {
       "name": "vso_account",
