@@ -215,6 +215,7 @@
         return {
           refName: field.referenceName,
           name: field.name,
+          type: field.type
         };
       });
     },
@@ -1095,6 +1096,15 @@
     },
 
     buildPatchToAddWorkItemField: function (fieldName, value) {
+      // Check if the field type is html to replace newlines by br
+      var field = this.getFieldByFieldRefName(fieldName);
+      if (field && field.type && value) {
+        var fieldType = field.type.toLowerCase();
+        if (fieldType === "html" || fieldType === "history") {
+          value = value.replace(/\n/g, "<br>");
+        }
+      }
+      
       return {
         op: "add",
         path: helpers.fmt("/fields/%@", fieldName),
