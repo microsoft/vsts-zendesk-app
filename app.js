@@ -841,7 +841,6 @@
     },
 
     drawWorkItems: function (data) {
-
       var workItems = _.map(data || this.vmLocal.workItems, function (workItem) {
         var tmp = this.attachRestrictedFieldsToWorkItem(workItem, 'summary');
         return tmp;
@@ -984,7 +983,8 @@
             return {
               refName: key,
               name: _.find(this.vm.fields, function (f) { return f.refName == key; }).name,
-              value: workItem.fields[key]
+              value: workItem.fields[key],
+              isHtml: this.isHtmlContentField(key)
             };
           }
         }
@@ -1097,12 +1097,8 @@
 
     buildPatchToAddWorkItemField: function (fieldName, value) {
       // Check if the field type is html to replace newlines by br
-      var field = this.getFieldByFieldRefName(fieldName);
-      if (field && field.type && value) {
-        var fieldType = field.type.toLowerCase();
-        if (fieldType === "html" || fieldType === "history") {
+      if (this.isHtmlContentField(fieldName)) {
           value = value.replace(/\n/g, "<br>");
-        }
       }
       
       return {
@@ -1110,6 +1106,16 @@
         path: helpers.fmt("/fields/%@", fieldName),
         value: value
       };
+    },
+    
+    isHtmlContentField: function (fieldName) {
+      var field = this.getFieldByFieldRefName(fieldName);
+      if (field && field.type) {
+        var fieldType = field.type.toLowerCase();
+        return (fieldType === "html" || fieldType === "history");
+      } else {
+        return false;
+      }
     },
 
     buildPatchToAddWorkItemHyperlink: function (url, name, comment) {

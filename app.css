@@ -142,20 +142,31 @@ hr.split {
     left: 0px; 
 }
 
-.workItems .workItem h4 {
+.workItem-title {
   line-height: 14px;
   margin-bottom: 8px; 
 }
-.workItems .workItem ul {
+
+.workItem-fields-list {
   margin-left: 0px;
   color: #7b7b7b; 
 }
 
-.workItems .workItem ul li {
+.workItem-field-item {
+  padding-top: 8px;
   line-height: 18px; 
 }
 
-.workItems h3 {
+.workItem-field-name {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.workItem-field-name-icon {
+  opacity: 0.5;
+}
+ 
+.workItems-header {
   font-size: 13px;
   line-height: 13px;
   border-bottom: 1px solid #dedede;
