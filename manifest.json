@@ -10,7 +10,7 @@
   "singleInstall": true,
   "private": true,
   "frameworkVersion": "1.0",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "parameters": [
     {
       "name": "vso_account",
@@ -26,6 +26,11 @@
     {
       "name": "vso_field_settings",
       "type": "hidden",
+      "required": false
+    },
+    {
+      "name": "vso_wi_description_template",
+      "type": "multiline",
       "required": false
     }
   ]

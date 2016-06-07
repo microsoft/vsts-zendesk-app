@@ -50,7 +50,10 @@
             <label class='control-label' for='description'>{{t "modals.new.fields.description"}}</label>
             <div class='controls'>
                 <textarea id='description' class='description input-xxlarge'></textarea>
-                <a href="#" class="copyDescription">{{t "modals.new.copyDescription"}}</a>
+                <a href="#" class="desc-action copyDescription">{{t "modals.new.copyDescription"}}</a>
+                {{#if templateDefined}}
+                | <a href="#" class="desc-action copyTemplate">{{t "modals.new.copyTemplate"}}</a>
+                {{/if}}
             </div>
         </div>
         {{#if attachments.length}}

@@ -58,6 +58,7 @@
       'change .newWorkItemModal .inputVsoProject': 'onNewVsoProjectChange',
       'change .newWorkItemModal .type': 'onNewVsoWorkItemTypeChange',
       'click .newWorkItemModal .copyDescription': 'onNewCopyDescriptionClick',
+      'click .newWorkItemModal .copyTemplate': 'onNewCopyTemplateClick',
       'click .newWorkItemModal .accept': 'onNewWorkItemAcceptClick',
 
       //Admin side pane
@@ -354,7 +355,10 @@
         var attachments = _.flatten(_.map(data.comments, function (comment) {
           return comment.attachments || [];
         }), true);
-        $modal.find('.modal-body').html(this.renderTemplate('new', { attachments: attachments }));
+        // Check if we have a template for decription
+        var templateDefined= !!this.setting('vso_wi_description_template');
+        
+        $modal.find('.modal-body').html(this.renderTemplate('new', { attachments: attachments, templateDefined: templateDefined }));
         $modal.find('.summary').val(this.ticket().subject());
 
         var projectCombo = $modal.find('.project');
@@ -398,6 +402,11 @@
     onNewCopyDescriptionClick: function (event) {
       event.preventDefault();
       this.$('.newWorkItemModal .description').val(this.ticket().description());
+    },
+    
+    onNewCopyTemplateClick: function (event) {
+      event.preventDefault();
+      this.$('.newWorkItemModal .description').val(this.setting('vso_wi_description_template'));
     },
 
     onNewWorkItemAcceptClick: function () {
