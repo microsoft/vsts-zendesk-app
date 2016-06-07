@@ -27,6 +27,11 @@
       "name": "vso_field_settings",
       "type": "hidden",
       "required": false
+    },
+    {
+      "name": "vso_wi_description_template",
+      "type": "multiline",
+      "required": false
     }
   ]
 }

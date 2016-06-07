@@ -87,10 +87,6 @@ hr.split {
   margin: 0px; 
 }
 
-.newWorkItemModal .copyDescription {
-  display: block; 
-}
-
 .admin .closeAdmin {
   float: right;
   opacity: 0.5; 

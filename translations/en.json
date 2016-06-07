@@ -8,7 +8,11 @@
       "vso_tag": {
         "label": "Visual Studio Team Services work item tag",
         "helpText": "Enter the tag you want to add to each Visual Studio Team Services linked work item. If empty, no tag will be added."
-      }
+      },
+      "vso_wi_description_template": {
+        "label": "Visual Studio Team Services work item description template",
+        "helpText": "Enter the text you want to allow to be used as a work item description template while creating new work items. If empty, no content will be suggested."
+      }      
     }
   },
   "buttons": {
@@ -95,7 +99,8 @@
         "attachments": "Attachments",
         "severity": "Severity"
       },
-      "copyDescription": "Copy the ticket's description"
+      "copyDescription": "Copy the ticket's description",
+      "copyTemplate": "Use configured template"
     },
     "notify": {
       "title": "Notify linked work items",
