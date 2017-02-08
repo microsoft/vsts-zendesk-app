@@ -806,7 +806,7 @@
       var vso_username = this.$('.vso_username').val();
       var vso_password = this.$('.vso_password').val();
 
-      if (!vso_username || !vso_password) {
+      if (!vso_password) {
         this.$(".login-form").find('.errors').text(this.I18n.t("login.errRequiredFields")).show();
         return;
       }
@@ -956,7 +956,7 @@
 
     authString: function (vso_username, vso_password) {
 
-      if (vso_username && vso_password) {
+      if (vso_password) {
         var b64 = Base64.encode([vso_username, vso_password].join(':'));
         this.store('auth_token_for_' + this.setting('vso_account'), b64);
       }

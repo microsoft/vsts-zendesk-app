@@ -31,11 +31,11 @@
   },
   "login": {
     "title": "Login",
-    "help": "Set your Visual Studio Team Services alternate credentials.",
+    "help": "Provide your Team Services credentials. To use a Personal Access Token (recommended), leave the Username field blank and supply your token in the Password field. The token needs at least the \"Work Item (read and write)\" scope.",
     "username": "Username",
     "password": "Password",
     "button": "Login",
-    "errRequiredFields": "Both username and password fields are required"
+    "errRequiredFields": "A password is required"
   },
   "workItems": {
     "unlink": "Unlink this work item",
