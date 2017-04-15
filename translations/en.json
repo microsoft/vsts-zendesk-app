@@ -91,6 +91,7 @@
       "fields": {
         "project": "Project",
         "area": "Area",
+        "iteration": "Iteration",
         "type": "Type",
         "summary": "Summary",
         "description": "Description",

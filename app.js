@@ -160,6 +160,7 @@
       getVsoProjects: function (skip) { return this.vsoRequest('/_apis/projects', { $top: VSO_PROJECTS_PAGE_SIZE, $skip: skip || 0 } );},
       getVsoProjectWorkItemTypes: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/workitemtypes', projectId)); },
       getVsoProjectAreas: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/classificationnodes/areas', projectId), { $depth: 9999 } ); },
+      getVsoProjectIterations: function (projectId) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/classificationnodes/iterations', projectId), { $depth: 9999 } ); },
       getVsoProjectWorkItemQueries: function (projectName) { return this.vsoRequest(helpers.fmt('/%@/_apis/wit/queries', projectName), { $depth: 2 }); },
       getVsoFields: function () { return this.vsoRequest('/_apis/wit/fields'); },
       getVsoWorkItems: function (ids) { return this.vsoRequest('/_apis/wit/workItems', { ids: ids, '$expand': 'relations' }); },
@@ -377,6 +378,7 @@
       this.loadProjectMetadata(projId)
       .done(function () {
         this.drawAreasList($modal.find('.area'), projId);
+        this.drawIterationsList($modal.find('.iteration'), projId);
         this.drawTypesList($modal.find('.type'), projId);
         $modal.find('.type').change();
         this.hideSpinnerInModal($modal);
@@ -416,8 +418,9 @@
       var proj = this.getProjectById($modal.find('.project').val());
       if (!proj) { return this.showErrorInModal($modal, this.I18n.t("modals.new.errProjRequired")); }
 
-      // read area id 
+      // read area and iteration id 
       var areaId = $modal.find('.area').val();
+      var iterationId = $modal.find('.iteration').val();
 
       //check work item type
       var workItemType = this.getWorkItemTypeByName(proj, $modal.find('.type').val());
@@ -436,6 +439,10 @@
 
       if (areaId) {
         operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
+      }
+
+      if (iterationId) {
+        operations.push(this.buildPatchToAddWorkItemField("System.IterationId", iterationId));
       }
 
       if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find('.severity').val()) {
@@ -869,6 +876,11 @@
       select.html(this.renderTemplate('areas', { areas: project.areas }));
     },    
 
+    drawIterationsList: function (select, projectId) {
+      var project = this.getProjectById(projectId);
+      select.html(this.renderTemplate('iterations', { iterations: project.iterations }));
+    },  
+
     drawQueriesList: function (select, projectId) {
       var project = this.getProjectById(projectId);
 
@@ -1063,28 +1075,33 @@
       var loadWorkItemTypes = this.ajax('getVsoProjectWorkItemTypes', project.id).done(function (data) {
         project.workItemTypes = this.restrictToAllowedWorkItems(data.value);
       }.bind(this));
+
+      var visitNode = function (nodes, node, currentPath) {
+        currentPath = currentPath ? currentPath + "\\" : "";
+        currentPath = currentPath + node.name;
+        nodes.push({ id: node.id, name: currentPath });
+        
+        if (node.children && node.children.length > 0) {
+          _.forEach(node.children, function (child) { visitNode(nodes, child, currentPath); });
+        }
+      }.bind(this);      
       
       var loadAreas = this.ajax('getVsoProjectAreas', project.id).done(function (rootArea) {
         var areas = [];
-        // Flatten areas to format \Area 1\Area 1.1
-        var visitArea = function (area, currentPath) {
-          currentPath = currentPath ? currentPath + "\\" : "";
-          currentPath = currentPath + area.name;
-          areas.push({ id: area.id, name: currentPath });
-          
-          if (area.children && area.children.length > 0) {
-            _.forEach(area.children, function (child) { visitArea(child, currentPath); });
-          }
-        };
-        
-        visitArea(rootArea);
+        visitNode(areas, rootArea);
         project.areas = _.sortBy(areas, function(area) { return area.name; } );
-        
+      }.bind(this));
+
+      var loadIterations = this.ajax('getVsoProjectIterations', project.id).done(function (rootIteration) {
+        var iterations = [];
+        visitNode(iterations, rootIteration);
+        project.iterations = _.sortBy(iterations, function(iteration) { return iteration.name; } );
       }.bind(this));
 
       return this.when(
           loadWorkItemTypes,
-          loadAreas
+          loadAreas,
+          loadIterations
       ).done(function () {
         project.metadataLoaded = true;
       });
