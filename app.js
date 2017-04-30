@@ -1034,6 +1034,14 @@
       this.ticket().tags().add(linkVsoTag);
 
       this.ajax('addTagToTicket', linkVsoTag);
+
+      // Check if there's a tag set for tickets on the backlog
+      if(this.setting('zendesk_backlog_tag')) {
+        // If there is, apply it to the ticket
+        var defaultTicketTag = this.setting('zendesk_backlog_tag');
+        this.ticket().tags().add(defaultTicketTag);
+        this.ajax('addTagToTicket', defaultTicketTag);
+      }
     },
 
     unlinkTicket: function (workItemId) {
@@ -1041,6 +1049,21 @@
       this.ticket().tags().remove(linkVsoTag);
 
       this.ajax('removeTagFromTicket', linkVsoTag);
+
+      // Check if there was a tag set for tickets on the backlog
+      if (this.setting('zendesk_backlog_tag')) {
+
+        // If this is the last linked work item, remove the tag
+        // Otherwise, don't do anything further here
+        // As the item is already unlinked from VSO at this point,
+        // if it was the last item then the list of linked VSO work items
+        // will be empty
+        if (this.getLinkedWorkItemIds().length === 0) {
+          var defaultTicketTag = this.setting('zendesk_backlog_tag');
+          this.ticket().tags().remove(defaultTicketTag);
+          this.ajax('removeTagFromTicket', defaultTicketTag);
+        }
+      }
     },
 
     buildTicketLinkUrl: function () {

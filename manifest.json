@@ -10,7 +10,7 @@
   "singleInstall": true,
   "private": true,
   "frameworkVersion": "1.0",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "parameters": [
     {
       "name": "vso_account",
@@ -32,6 +32,11 @@
       "name": "vso_wi_description_template",
       "type": "multiline",
       "required": false
+    },
+    {
+      "name": "zendesk_backlog_tag",
+      "type": "text",
+      "required": "false"
     }
   ]
 }
