@@ -12,7 +12,11 @@
       "vso_wi_description_template": {
         "label": "Visual Studio Team Services work item description template",
         "helpText": "Enter the text you want to allow to be used as a work item description template while creating new work items. If empty, no content will be suggested."
-      }      
+      },
+      "zendesk_backlog_tag": {
+        "label": "Zendesk ticket tag",
+        "helpText": "Enter a tag you want to add to Zendesk tickets when they are linked to a Visual Studio Team Services work item. If empty, no additional tags will be added. The app will add a unique tag for each linked work item regardless of this setting."
+      }     
     }
   },
   "buttons": {

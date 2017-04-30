@@ -36,7 +36,7 @@
     {
       "name": "zendesk_backlog_tag",
       "type": "text",
-      "required": "false"
+      "required": false
     }
   ]
 }
