@@ -1,37 +1,35 @@
 {
-  "author": {
-    "name": "Microsoft",
-    "email": "vsointegration@microsoft.com"
-  },
-  "location": [
-    "ticket_sidebar"
-  ],
-  "defaultLocale": "en",
-  "singleInstall": true,
-  "private": true,
-  "frameworkVersion": "1.0",
-  "version": "0.5.0",
-  "parameters": [
-    {
-      "name": "vso_account",
-      "type": "text",
-      "required": true
+    "author": {
+        "name": "Microsoft",
+        "email": "vsointegration@microsoft.com"
     },
-    {
-      "name": "vso_tag",
-      "type": "text",
-      "required": false,
-      "default": "zendesk"
-    },  
-    {
-      "name": "vso_field_settings",
-      "type": "hidden",
-      "required": false
-    },
-    {
-      "name": "vso_wi_description_template",
-      "type": "multiline",
-      "required": false
-    }
-  ]
+    "location": ["ticket_sidebar"],
+    "defaultLocale": "en",
+    "singleInstall": true,
+    "private": true,
+    "frameworkVersion": "1.0",
+    "version": "0.5.0",
+    "parameters": [
+        {
+            "name": "vso_account",
+            "type": "text",
+            "required": true
+        },
+        {
+            "name": "vso_tag",
+            "type": "text",
+            "required": false,
+            "default": "zendesk"
+        },
+        {
+            "name": "vso_field_settings",
+            "type": "hidden",
+            "required": false
+        },
+        {
+            "name": "vso_wi_description_template",
+            "type": "multiline",
+            "required": false
+        }
+    ]
 }
