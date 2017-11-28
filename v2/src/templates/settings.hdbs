@@ -1,0 +1,18 @@
+<table class='settings table'>
+  <thead>
+    <tr>
+      <th></th>
+      <th class='center'>{{t "admin.summary"}}</th>
+      <th class='center'>{{t "admin.details"}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each settings}}
+    <tr data-refName='{{refName}}'>
+        <td>{{name}}</td>
+        <td class='center'><input type='checkbox' class='summary' {{#if summary}}checked{{/if}}/></td>
+        <td class='center'><input type='checkbox' class='details' {{#if details}}checked{{/if}}/></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

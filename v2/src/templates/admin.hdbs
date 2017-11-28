@@ -1,0 +1,9 @@
+<div class='admin'>
+  <a class='closeAdmin'><i class='icon-circle-arrow-left'/></a>
+  <h3>{{t "admin.title"}}</h3>
+
+
+  <div class='content'>
+    <div class="loading">{{spinner "dotted"}}</div>
+  </div>
+</div>

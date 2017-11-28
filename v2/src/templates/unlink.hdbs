@@ -1,0 +1,6 @@
+<form class='form-horizontal'>
+    <p class='alert alert-error errors' style='display:none'>
+    </p>
+    <p class='confirm'></p>
+</form>
+<div class="loading" style='display:none'>{{spinner "dotted"}}</div>

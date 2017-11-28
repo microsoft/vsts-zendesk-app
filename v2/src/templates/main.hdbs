@@ -1,0 +1,89 @@
+<ul class='buttons'>
+    <li>
+        <button class='btn btn-mini newWorkItem'>{{t "buttons.create"}}</button>
+    </li>
+    <li>
+        <button class='btn btn-mini link'>{{t "buttons.link"}}</button>
+    </li>
+    <li>
+        <button class='btn btn-mini notify'>{{t "buttons.notify"}}</button>
+    </li>
+</ul>
+
+<hr class='split'>
+
+    
+<div class='workItems'>
+    <div class="workItemsError alert alert-error" style="display:none">
+        <strong>{{t "errorOoops"}}</strong> {{t "errorLoadingWorkItems"}}
+        <a href="#" class="refreshWorkItemsLink" title="Refresh">
+            <i class="icon-refresh"></i>
+        </a>
+    </div>    
+</div>
+
+
+<div class='detailsModal modal hide fade' tabindex='-1' role='dialog'>
+  <div class='modal-header'>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>{{t "modals.details.loading"}}</h3>
+  </div>
+  <div class='modal-body'>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.details.close"}}</button>
+  </div>
+</div>
+
+<div class='unlinkModal modal hide fade' tabindex='-1' role='dialog'>
+  <div class='modal-header'>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>{{t "modals.unlink.title"}}</h3>
+  </div>
+    <div class='modal-body'>
+    </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.unlink.close"}}</button>
+    <button class="btn btn-danger accept">{{t "modals.unlink.accept"}}</button>
+  </div>
+</div>
+
+<div class='linkModal modal hide fade' tabindex='-1' role='dialog'>
+  <div class='modal-header'>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>{{t "modals.link.title"}}</h3>
+  </div>
+  <div class='modal-body'>
+  </div>
+  <div class="modal-footer">
+    <!--<button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.link.close"}}</button>
+    <button class="btn search">{{t "modals.link.search"}}</button>
+    <button class="btn btn-primary accept">{{t "modals.link.accept"}}</button>-->
+  </div>
+</div>
+
+<div class='newWorkItemModal modal hide fade' tabindex='-1' role='dialog'>
+  <div class='modal-header'>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>{{t "modals.new.title"}}</h3>
+  </div>
+  <div class='modal-body'>
+  </div>
+  <div class='modal-footer'>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.new.close"}}</button>
+    <button class="btn btn-primary accept">{{t "modals.new.accept"}}</button>
+  </div>
+</div>
+
+<div class='notifyModal modal hide fade' tabindex='-1' role='dialog'>
+  <div class='modal-header'>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>{{t "modals.notify.title"}}</h3>
+  </div>
+  <div class='modal-body'>
+  </div>
+  <div class='modal-footer'>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.notify.close"}}</button>
+    <button class="btn btn-primary accept">{{t "modals.notify.accept"}}</button>
+  </div>
+</div>

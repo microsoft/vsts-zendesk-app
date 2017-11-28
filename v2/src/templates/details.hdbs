@@ -1,0 +1,14 @@
+<table class="table table-condensed">
+    {{#each restricted_fields}}
+    <tr>
+    <td><strong>{{name}}</strong></td>
+        <td>
+            {{#if isHtml}}
+              {{{value}}}
+            {{else}}
+              {{value}}
+            {{/if}}
+        </td>
+    </tr>
+    {{/each}}
+</table>

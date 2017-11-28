@@ -1,0 +1,79 @@
+{
+  "_from": "github:zendesk/app_scaffold#v0.2.0",
+  "_id": "app_scaffold@0.1.0",
+  "_inBundle": false,
+  "_integrity": "sha1-00uhZ6W+HJVTgkHLrsvo2H4MB7A=",
+  "_location": "/zendesk_app_migrator/app_scaffold",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "app_scaffold@github:zendesk/app_scaffold#v0.2.0",
+    "name": "app_scaffold",
+    "escapedName": "app_scaffold",
+    "rawSpec": "github:zendesk/app_scaffold#v0.2.0",
+    "saveSpec": "github:zendesk/app_scaffold#v0.2.0",
+    "fetchSpec": null,
+    "gitCommittish": "v0.2.0"
+  },
+  "_requiredBy": [
+    "/zendesk_app_migrator"
+  ],
+  "_resolved": "github:zendesk/app_scaffold#6116ac155658b07e4a85320939fd4a682f0d5a94",
+  "_spec": "app_scaffold@github:zendesk/app_scaffold#v0.2.0",
+  "_where": "C:\\Users\\trgau\\AppData\\Roaming\\npm\\node_modules\\zendesk_app_migrator",
+  "author": {
+    "name": "Zendesk"
+  },
+  "bugs": {
+    "url": "https://github.com/zendesk/app_scaffold/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "A scaffold for developers to build ZAF v2 apps",
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "css-loader": "^0.28.4",
+    "eslint": "^4.4.1",
+    "eslint-loader": "^1.9.0",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "file-loader": "^0.11.2",
+    "handlebars": "^1.3.0",
+    "handlebars-loader": "^1.5.0",
+    "html-webpack-plugin": "^2.30.1",
+    "jasmine-core": "^2.7.0",
+    "json-loader": "^0.5.7",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-webpack": "^2.0.4",
+    "loader-utils": "^1.1.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
+    "webpack": "^3.5.1"
+  },
+  "homepage": "https://github.com/zendesk/app_scaffold#readme",
+  "keywords": [
+    "zendesk",
+    "app",
+    "framework"
+  ],
+  "license": "Apache-2.0",
+  "name": "app_scaffold",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zendesk/app_scaffold.git"
+  },
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack --watch"
+  },
+  "version": "0.1.0"
+}

@@ -1,0 +1,8 @@
+<div class="alert alert-error">
+    <strong>{{t "errorOoops"}}</strong>
+    {{#if invalidAccount}}
+        {{t "errorInvalidAccount" accountName = accountName}}
+    {{else}}
+        {{t "errorLoadingApp"}} <a class='user-link'><i class="icon-user"/></a>
+    {{/if}}
+</div>
