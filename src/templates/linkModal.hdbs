@@ -1,0 +1,13 @@
+
+  <div class='modal-header'>
+    <h3>{{t "modals.link.title"}}</h3>
+    <div class="spacer"></div>
+    <div class="busySpinner spinner dotted"></div>
+  </div>
+  <div class='modal-body linkModal'>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{{t "modals.link.close"}}</button>
+    <!--<button class="btn search">{{t "modals.link.search"}}</button>
+    <button class="btn btn-primary accept">{{t "modals.link.accept"}}</button>-->
+  </div>

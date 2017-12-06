@@ -12,11 +12,16 @@ module.exports = {
       "babel-polyfill",
       "./src/javascripts/index.js",
       "./src/stylesheets/app.scss"
+    ],
+    modal: [
+      "babel-polyfill",
+      "./src/javascripts/modal.js",
+      "./src/stylesheets/app.scss"
     ]
   },
   output: {
     path: path.resolve(__dirname, "./dist/assets"),
-    filename: "main.js",
+    filename: "[name].js",
     sourceMapFilename: "[file].map"
   },
   module: {
@@ -90,7 +95,18 @@ module.exports = {
         "AUTOMATICALLY GENERATED FROM ./lib/templates/layout.hdbs - DO NOT MODIFY THIS FILE DIRECTLY",
       vendorCss: externalAssets.css,
       vendorJs: externalAssets.js,
-      template: "!!handlebars-loader!./lib/templates/layout.hdbs"
+      template: "!!handlebars-loader!./lib/templates/layout.hdbs",
+      chunks: ["app"],
+      filename: "index.html"
+    }),
+    new HtmlWebpackPlugin({
+      warning:
+        "AUTOMATICALLY GENERATED FROM ./lib/templates/modal.hdbs - DO NOT MODIFY THIS FILE DIRECTLY",
+      vendorCss: externalAssets.css,
+      vendorJs: externalAssets.js,
+      template: "!!handlebars-loader!./lib/templates/modal.hdbs",
+      filename: "modal.html",
+      chunks: ["modal"]
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {

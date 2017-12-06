@@ -70,7 +70,7 @@
         },
         "link": {
             "title": "Link to a work item",
-            "close": "Go back",
+            "close": "Close",
             "accept": "Link",
             "search": "Search",
             "query": "Query",
@@ -87,7 +87,7 @@
         },
         "new": {
             "title": "New Visual Studio Team Services Work Item",
-            "close": "Go back",
+            "close": "Close",
             "accept": "Create work item",
             "help": "Fill this form to create a new Visual Studio Team Services work item and link it to this ticket.",
             "automatic": "Automatic",
