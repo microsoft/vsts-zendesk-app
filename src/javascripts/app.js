@@ -451,6 +451,7 @@ const App = (function() {
                 fieldSettings: {},
                 userProfile: {},
                 isAppLoadedOk: false,
+                settings: { "vso_wi_description_template": this.setting("vso_wi_description_template") }
             });
 
             if (data.firstLoad) {
@@ -595,10 +596,6 @@ const App = (function() {
 
             event.preventDefault();
             this.$(".newWorkItemModal .description").val(_ticket2.description);
-        },
-        onNewCopyTemplateClick: function(event) {
-            event.preventDefault();
-            this.$(".newWorkItemModal .description").val(this.setting("vso_wi_description_template"));
         },
         onCogClick: function() {
             this.switchTo("admin");

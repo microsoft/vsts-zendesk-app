@@ -333,6 +333,9 @@ const ModalApp = BaseApp.extend({
         $modal.find(".accept").on("click", () => {
             this.onNewWorkItemAcceptClick();
         });
+        $modal.find(".copyTemplate").on("click", (e) => {
+            this.onNewCopyTemplateClick(e);
+        });
         projectCombo.change();
         this.resize({ height: "520px", width: "780px" });
     },
@@ -343,6 +346,11 @@ const ModalApp = BaseApp.extend({
 
     hideBusy: function() {
         this.$("[data-main] .busySpinner").hide();
+    },
+
+    onNewCopyTemplateClick: function(event) {
+        event.preventDefault();
+        this.$("[data-main] .description").val(getVm("settings[vso_wi_description_template]"));
     },
 
     onCopyLastCommentClick: function(event) {
