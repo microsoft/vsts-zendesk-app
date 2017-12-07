@@ -264,16 +264,12 @@ const App = (function() {
         },
 
         action_ajax: async endpoint => {
-            return await new Promise(resolve => {
-                window.appThis.ajax
-                    .apply(window.appThis, endpoint)
-                    .then(result => {
-                        resolve(result);
-                    })
-                    .catch(function(xhr, status, err) {
-                        console.log("Failure... status: " + status + ", err: " + err);
-                    });
-            });
+            try {
+                return await window.appThis.ajax.apply(window.appThis, endpoint);
+            } catch (e) {
+                // e is jqXHR
+                throw new Error(e.responseJSON.message);
+            }
         },
 
         action_linkTicket: async workItemId => {
@@ -288,7 +284,7 @@ const App = (function() {
             return await window.appThis.getLinkedWorkItemIds();
         },
 
-        action_setDirty: function () {
+        action_setDirty: function() {
             window.appThis.isDirty = true;
         },
 
@@ -472,7 +468,13 @@ const App = (function() {
                         if (typeof args === "string") {
                             args = [args];
                         }
-                        setMessageArg(await this["action_" + args[0]].call(this, args.slice(1)));
+                        let result;
+                        try {
+                            result = await this["action_" + args[0]].call(this, args.slice(1));
+                        } catch (e) {
+                            result = { err: e.message };
+                        }
+                        setMessageArg(result);
                         this._currentModalClient.trigger("execute.response");
                     }.bind(this),
                 );
@@ -546,7 +548,7 @@ const App = (function() {
             }
         },
         resize: function() {
-            this.zafClient.invoke("resize", { height: this.$("html").height(), width: "100%" });
+            this.zafClient.invoke("resize", { height: this.$("html").outerHeight(true) + 15, width: "100%" });
         },
 
         // UI

@@ -214,6 +214,13 @@
         }
     }
 
+    .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
     .controlButtons {
         display: flex;
         flex-direction: row;

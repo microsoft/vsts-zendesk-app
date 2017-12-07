@@ -192,7 +192,11 @@ const ModalApp = BaseApp.extend({
         });
     },
     onSidebarResponse: function(response) {
-        this._nextSidebarQueryResponseResolver(response);
+        if (response && response.err) {
+            this._nextSidebarQueryResponseResolver.reject({ message: response.err });
+        } else {
+            this._nextSidebarQueryResponseResolver.resolve(response);
+        }
     },
     execQueryOnSidebar: async function(taskName) {
         this.showBusy();
@@ -200,8 +204,8 @@ const ModalApp = BaseApp.extend({
         this._parentClient.trigger("execute.query");
         let response;
         try {
-            response = await new Promise(resolve => {
-                this._nextSidebarQueryResponseResolver = resolve;
+            response = await new Promise((resolve, reject) => {
+                this._nextSidebarQueryResponseResolver = { resolve, reject };
             });
         } finally {
             this.hideBusy();
@@ -235,7 +239,7 @@ const ModalApp = BaseApp.extend({
         $modal.find(".copyLastComment").on("click", e => {
             this.onCopyLastCommentClick(e);
         });
-        this.resize({ width: "28vw", height: "28vh" });
+        this.resize({ width: "550px", height: "300px" });
     },
 
     action_initUnlinkWorkItem: function(workItem) {
@@ -251,7 +255,7 @@ const ModalApp = BaseApp.extend({
         $modal.find(".accept").on("click", e => {
             this.onUnlinkAcceptClick(e);
         });
-        this.resize({ width: "30vw", height: "18vh" });
+        this.resize({ width: "580px", height: "200px" });
     },
 
     action_initLinkWorkItem: function() {
@@ -261,8 +265,7 @@ const ModalApp = BaseApp.extend({
         $modal.find("button.search").show();
         const projectCombo = $modal.find(".project");
         this.fillComboWithProjects(projectCombo);
-        projectCombo.change();
-        this.resize({ width: "30vw", height: "27vh" });
+        this.resize({ width: "580px", height: "280px" });
 
         $modal.find(".search").on("click", () => {
             this.onLinkSearchClick();
@@ -284,6 +287,7 @@ const ModalApp = BaseApp.extend({
         $modal.find(".accept").on("click", e => {
             this.onLinkAcceptClick(e);
         });
+        projectCombo.change();
     },
 
     action_initWorkItemDetails: async function(workItem) {
@@ -298,7 +302,7 @@ const ModalApp = BaseApp.extend({
             }),
         );
         $modal.find(".modal-body").html(this.renderTemplate("details", workItem));
-        this.resize({ width: "40vw" });
+        this.resize({ width: "770px" });
     },
 
     action_initNewWorkItem: async function() {
@@ -492,10 +496,10 @@ const ModalApp = BaseApp.extend({
                 );
                 try {
                     await this.execQueryOnSidebar(["ajax", "updateVsoWorkItem", workItemId, [addLinkOperation]]);
+                    finish();
                 } catch (e) {
                     this.showErrorInModal($modal, this.I18n.t("modals.link.errCannotUpdateWorkItem") + " - " + e.message);
                 }
-                finish();
             }
         }.bind(this);
 
@@ -585,7 +589,7 @@ const ModalApp = BaseApp.extend({
     onLinkSearchClick: function() {
         const $modal = this.$("[data-main]");
         $modal.find(".search-section").show();
-        this.resize({ width: "30vw" });
+        this.resize({ width: "580px" });
     },
 
     onNewWorkItemAcceptClick: async function() {
@@ -926,12 +930,13 @@ const ModalApp = BaseApp.extend({
                 .find(".modal-body .errors")
                 .text(err)
                 .show();
+            this.resize();
         }
     },
     resize: function(size = {}) {
         // Automatically resize the iframe based on document height, if it's not in the "nav_bar" location
         if (this._context.location !== "nav_bar") {
-            this.zafClient.invoke("resize", { height: size.height || this.$("html").height(), width: size.width || "50vw" });
+            this.zafClient.invoke("resize", { height: size.height || this.$("html").height() + 40, width: size.width || this.$("html").outerWidth(true) });
         }
     },
     restrictToAllowedWorkItems: function(wits) {
