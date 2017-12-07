@@ -3,14 +3,16 @@
     "name": "Microsoft",
     "email": "vsointegration@microsoft.com"
   },
-  "location": [
-    "ticket_sidebar"
-  ],
+  "location": {
+    "support": {
+      "ticket_sidebar": "assets/index.html"
+    }
+  },
   "defaultLocale": "en",
   "singleInstall": true,
   "private": true,
-  "frameworkVersion": "1.0",
-  "version": "0.5.0",
+  "frameworkVersion": "2.0",
+  "version": "0.6.0",
   "parameters": [
     {
       "name": "vso_account",
@@ -22,7 +24,7 @@
       "type": "text",
       "required": false,
       "default": "zendesk"
-    },  
+    },
     {
       "name": "vso_field_settings",
       "type": "hidden",
@@ -33,5 +35,9 @@
       "type": "multiline",
       "required": false
     }
-  ]
+  ],
+  "migrator": {
+    "migratedAt": "Mon Nov 27 2017",
+    "version": "0.3.2"
+  }
 }

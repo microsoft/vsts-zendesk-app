@@ -1,0 +1,26 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-unused-vars": 0,
+    "no-undef": 0,
+    "no-console": 0,
+    "no-unreachable": 0,
+    "no-debugger": 0,
+    "no-useless-escape": 0
+  },
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "globals": {
+    "helpers": true,
+    "Base64": true
+  },
+  "root": true
+}
