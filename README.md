@@ -8,13 +8,13 @@ Unite your customer support and development teams. Quickly create or link work i
 
 With the Visual Studio Team Services app for Zendesk, users in Zendesk can quickly create a new work item from a Zendesk ticket.
 
-![img](https://i3-vso.sec.s-msft.com/dynimg/IC729561.png)
+![img](images/zendesk-screen1.png)
 
 ### Get instant access to the status of linked work items
 
 Give your customer support team easy access to the information they need. See details about work items linked to a Zendesk ticket.
 
-![img](https://ms-vsts.gallery.vsassets.io/_apis/public/gallery/publisher/ms-vsts/extension/services-zendesk/latest/assetbyname/images/zendesk-linked.png)
+![img](images/zendesk-linked.png)
 
 ## How to install and setup
 
