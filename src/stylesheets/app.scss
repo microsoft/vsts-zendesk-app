@@ -17,8 +17,8 @@
         margin-bottom: 8px;
     }
 
-    .header h3.app_name {
-        font-size: 16px;
+    .header h3.app_name, .modal-header h3 {
+        font-size: 15px;
     }
 
     hr.split {
@@ -80,9 +80,8 @@
     }
 
     .workItems .workItem {
-        padding-left: 30px;
+        padding: 0px 10px 17px 10px;
         border-bottom: 1px solid #dedede;
-        padding-bottom: 17px;
         margin-top: 18px;
         position: relative;
     }
@@ -96,6 +95,7 @@
     .workItem-title {
         line-height: 14px;
         margin-bottom: 8px;
+        font-size: 14px;
     }
 
     .workItem-fields-list {
@@ -110,8 +110,7 @@
     }
 
     .workItem-field-name {
-        font-weight: bold;
-        text-transform: uppercase;
+        font-weight: 500;
     }
 
     .workItem-field-name-icon {

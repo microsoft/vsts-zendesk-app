@@ -1,12 +1,12 @@
 import ZAFClient from 'zendesk_app_framework_sdk';
-import LegacyApp from '../../src/javascripts/legacy_app';
+import App from '../../src/javascripts/app';
 
-describe('LegacyApp', () => {
+describe('App', () => {
   let app;
 
   beforeEach(() => {
     let client = ZAFClient.init();
-    app = new LegacyApp(client, { metadata: {}, context: {} });
+    app = new App(client, { metadata: {}, context: {} });
   });
 
   describe('#renderMain', () => {

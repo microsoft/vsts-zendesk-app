@@ -1,35 +1,14 @@
 {
-  "_from": "github:zendesk/app_scaffold#v0.2.0",
-  "_id": "app_scaffold@0.1.0",
-  "_inBundle": false,
-  "_integrity": "sha1-00uhZ6W+HJVTgkHLrsvo2H4MB7A=",
-  "_location": "/zendesk_app_migrator/app_scaffold",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "app_scaffold@github:zendesk/app_scaffold#v0.2.0",
-    "name": "app_scaffold",
-    "escapedName": "app_scaffold",
-    "rawSpec": "github:zendesk/app_scaffold#v0.2.0",
-    "saveSpec": "github:zendesk/app_scaffold#v0.2.0",
-    "fetchSpec": null,
-    "gitCommittish": "v0.2.0"
-  },
-  "_requiredBy": [
-    "/zendesk_app_migrator"
-  ],
-  "_resolved": "github:zendesk/app_scaffold#6116ac155658b07e4a85320939fd4a682f0d5a94",
-  "_spec": "app_scaffold@github:zendesk/app_scaffold#v0.2.0",
-  "_where": "C:\\Users\\trgau\\AppData\\Roaming\\npm\\node_modules\\zendesk_app_migrator",
   "author": {
-    "name": "Zendesk"
+    "name": "Microsoft",
+    "email": "vsointegration@microsoft.com"
   },
   "bugs": {
-    "url": "https://github.com/zendesk/app_scaffold/issues"
+    "url": "https://github.com/Microsoft/vsts-zendesk-app/issues"
   },
   "bundleDependencies": false,
   "deprecated": false,
-  "description": "A scaffold for developers to build ZAF v2 apps",
+  "description": "Visual Studio Team Services App for Zendesk",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
@@ -59,21 +38,21 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.5.1"
   },
-  "homepage": "https://github.com/zendesk/app_scaffold#readme",
+  "homepage": "https://github.com/Microsoft/vsts-zendesk-app",
   "keywords": [
-    "zendesk",
-    "app",
-    "framework"
+    "microsoft",
+    "tfs",
+    "vsts",
+    "zendesk"
   ],
-  "license": "Apache-2.0",
-  "name": "app_scaffold",
+  "name": "vsts-zendesk-app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zendesk/app_scaffold.git"
+    "url": "https://github.com/Microsoft/vsts-zendesk-app"
   },
   "scripts": {
     "build": "webpack -p",
     "watch": "webpack --watch"
   },
-  "version": "0.1.0"
+  "version": "0.6.0"
 }

@@ -3,7 +3,7 @@ This is the first JavaScript file that runs once your iframe is loaded within a 
 */
 import ZAFClient from 'zendesk_app_framework_sdk';
 import I18n from 'i18n';
-import LegacyApp from './legacy_app';
+import App from './app';
 
 // Create a new ZAFClient
 var client = ZAFClient.init();
@@ -14,6 +14,6 @@ client.on('app.registered', function(appData) {
     // load translations based on the account's current locale
     I18n.loadTranslations(userData['currentUser.locale']);
     // create a new instance of your app
-    new LegacyApp(client, appData);
+    new App(client, appData);
   });
 });
