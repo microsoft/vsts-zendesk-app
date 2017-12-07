@@ -1,3 +1,0 @@
-{{#each types}}
-<option value="{{name}}">{{name}}</option>
-{{/each}}
