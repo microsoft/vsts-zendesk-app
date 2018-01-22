@@ -11,8 +11,13 @@
   "defaultLocale": "en",
   "singleInstall": true,
   "private": true,
+<<<<<<< HEAD:manifest.json
+  "frameworkVersion": "1.0",
+  "version": "0.5.1",
+=======
   "frameworkVersion": "2.0",
   "version": "0.6.1",
+>>>>>>> upstream/master:dist/manifest.json
   "parameters": [
     {
       "name": "vso_account",
@@ -33,6 +38,11 @@
     {
       "name": "vso_wi_description_template",
       "type": "multiline",
+      "required": false
+    },
+    {
+      "name": "zendesk_backlog_tag",
+      "type": "text",
       "required": false
     }
   ],
