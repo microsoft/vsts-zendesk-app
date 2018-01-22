@@ -1,0 +1,27 @@
+<div class="controlButtons">
+    <a class='user'><i class="icon-user"/></a>
+    <a class='cog'><i class='icon-cog'/></a>
+</div>
+<ul class='buttons'>
+    <li>
+        <button class='btn btn-mini newWorkItem'>{{t "buttons.create"}}</button>
+    </li>
+    <li>
+        <button class='btn btn-mini link'>{{t "buttons.link"}}</button>
+    </li>
+    <li>
+        <button class='btn btn-mini notify'>{{t "buttons.notify"}}</button>
+    </li>
+</ul>
+
+<hr class='split'>
+
+    
+<div class='workItems'>
+    <div class="workItemsError alert alert-error" style="display:none">
+        <strong>{{t "errorOoops"}}</strong> {{t "errorLoadingWorkItems"}}
+        <a href="#" class="refreshWorkItemsLink" title="Refresh">
+            <i class="icon-refresh"></i>
+        </a>
+    </div>    
+</div>

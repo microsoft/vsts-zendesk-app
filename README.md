@@ -1,6 +1,6 @@
 # Visual Studio Team Services App for Zendesk
 
-> Get the latest version of the app: [Download v0.5.0](https://github.com/Microsoft/vsts-zendesk-app/releases/download/v0.5.0/vsts-zendesk-app-0.5.0.zip)
+> Get the latest version of the app: [Download v0.6.0](https://github.com/Microsoft/vsts-zendesk-app/releases/download/v0.6.0/vsts-zendesk-app-0.6.0.zip)
 
 Unite your customer support and development teams. Quickly create or link work items to tickets, enable efficient two-way communication, and stop using email to check status.
 
@@ -8,19 +8,19 @@ Unite your customer support and development teams. Quickly create or link work i
 
 With the Visual Studio Team Services app for Zendesk, users in Zendesk can quickly create a new work item from a Zendesk ticket.
 
-![img](https://i3-vso.sec.s-msft.com/dynimg/IC729561.png)
+![img](images/zendesk-screen1.png)
 
 ### Get instant access to the status of linked work items
 
 Give your customer support team easy access to the information they need. See details about work items linked to a Zendesk ticket.
 
-![img](https://ms-vsts.gallery.vsassets.io/_apis/public/gallery/publisher/ms-vsts/extension/services-zendesk/latest/assetbyname/images/zendesk-linked.png)
+![img](images/zendesk-linked.png)
 
 ## How to install and setup
 
 ### Install the app to Zendesk
 
-1. Download the latest release .zip file: **[version 0.5.0](https://github.com/Microsoft/vsts-zendesk-app/releases/download/v0.5.0/vsts-zendesk-app-0.5.0.zip)**
+1. Download the latest release .zip file: **[version 0.6.0](https://github.com/Microsoft/vsts-zendesk-app/releases/download/v0.6.0/vsts-zendesk-app-0.6.0.zip)**
 1. From Zendesk, click the settings icon (gear)
 1. Under **Apps** click Manage.
 1. Click **Upload private app**
