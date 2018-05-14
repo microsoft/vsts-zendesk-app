@@ -146,6 +146,11 @@ const App = (function() {
                     type: "GET",
                 };
             },
+            getOrganizations: async function() {
+                const ticket = await wrapZafClient(this.zafClient, "ticket");
+
+                return ticket.organization.name;
+            },
             addTagToTicket: async function(tag) {
                 const ticket = await wrapZafClient(this.zafClient, "ticket");
                 return {

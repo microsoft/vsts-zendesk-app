@@ -158,6 +158,8 @@ const ModalApp = BaseApp.extend({
         const parentClient = this.zafClient.instance(parentGuid);
         this._parentClient = parentClient;
 
+
+
         setMessageArg(this._context.instanceGuid);
         parentClient.trigger("registered.done");
 
@@ -649,8 +651,12 @@ const ModalApp = BaseApp.extend({
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
         } //Set tag
 
-        if (this.setting("vso_tag")) {
-            operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
+       
+        console.log(ticket);
+
+       // if (this.setting("vso_tag")) {
+        if (ticket.organization) {
+            operations.push(this.buildPatchToAddWorkItemField("System.Tags", ticket.organization.name));
         }
 
         //Add hyperlink to ticket url
