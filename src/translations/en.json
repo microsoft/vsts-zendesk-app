@@ -98,6 +98,7 @@
                 "project": "Project",
                 "area": "Area",
                 "type": "Type",
+                "iteration": "Iteration",
                 "summary": "Summary",
                 "description": "Description",
                 "assignee": "Assignee",
