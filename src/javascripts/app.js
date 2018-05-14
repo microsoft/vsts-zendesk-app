@@ -209,6 +209,11 @@ const App = (function() {
                     $depth: 9999,
                 });
             },
+            getVsoProjectIterations: function (projectId) { 
+                return this.vsoRequest(helpers.fmt('/%@/_apis/wit/classificationnodes/iterations', projectId), { 
+                    $depth: 9999 
+                } ); 
+            },
             getVsoProjectWorkItemQueries: function(projectName) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/queries", projectName), {
                     $depth: 2,
@@ -569,6 +574,7 @@ const App = (function() {
                 .then(
                     function() {
                         this.drawAreasList($modal.find(".area"), projId);
+                        this.drawIterationsList($modal.find('.iteration'), projId);
                         this.drawTypesList($modal.find(".type"), projId);
                         $modal.find(".type").change();
                         this.hideSpinnerInModal($modal);
@@ -756,6 +762,14 @@ const App = (function() {
                 }),
             );
         },
+        drawIterationsList: function (select, projectId) {
+            var project = this.getProjectById(projectId);
+            select.html(
+                this.renderTemplate('iterations', { 
+                    iterations: project.iterations 
+                })
+            );
+        }, 
         drawSettings: function() {
             const fields = getVm("fields");
             var settings = _.sortBy(
@@ -1014,7 +1028,31 @@ const App = (function() {
                     });
                 }.bind(this),
             );
-            return this.when(loadWorkItemTypes, loadAreas).then(function() {
+            var loadIterations = this.ajax("getVsoProjectIterations", project.id).then(
+                function(rootIteration) {
+                    var iterations = []; 
+
+                    var visitIteration = function(iteration, currentPath) {
+                        currentPath = currentPath ? currentPath + "\\" : "";
+                        currentPath = currentPath + iteration.name;
+                        iterations.push({
+                            id: iteration.id,
+                            name: currentPath,
+                        });
+
+                        if (iteration.children && iteration.children.length > 0) {
+                            _.forEach(iteration.children, function(child) {
+                                visitIteration(child, currentPath);
+                            });
+                        }
+                    };
+                    visitIteration(rootIteration);
+                    project.iterations = _.sortBy(iterations, function(iteration) {
+                        return iteration.id;
+                    });
+                }.bind(this),
+            );
+            return this.when(loadWorkItemTypes, loadAreas, loadIterations).then(function() {
                 project.metadataLoaded = true;
             });
         },

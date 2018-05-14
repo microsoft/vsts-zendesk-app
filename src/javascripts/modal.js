@@ -613,6 +613,7 @@ const ModalApp = BaseApp.extend({
 
         // read area id
         const areaId = $modal.find(".area").val(); //check work item type
+        var iterationId = $modal.find('.iteration').val();
 
         const workItemType = this.getWorkItemTypeByName(proj, $modal.find(".type").val());
         if (!workItemType) {
@@ -635,6 +636,10 @@ const ModalApp = BaseApp.extend({
         if (areaId) {
             operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
         }
+
+        if (iterationId) {
+            operations.push(this.buildPatchToAddWorkItemField("System.IterationId", iterationId));
+          }
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find(".severity").val()) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find(".severity").val()));
@@ -817,7 +822,9 @@ const ModalApp = BaseApp.extend({
         this.loadProjectMetadata(projId)
             .then(
                 function() {
+                    console.log('Model new item');
                     this.drawAreasList($modal.find(".area"), projId);
+                    this.drawIterationsList($modal.find('.iteration'), projId);
                     this.drawTypesList($modal.find(".type"), projId);
                     $modal.find(".type").change();
                     this.hideBusy();
@@ -872,6 +879,33 @@ const ModalApp = BaseApp.extend({
         visitArea(areaData);
         project.areas = _.sortBy(areas, function(area) {
             return area.name;
+        });
+
+
+        //------
+
+        const iterationsData = await this.execQueryOnSidebar(["ajax", "getVsoProjectIterations", project.id]);
+        var iterations = []; 
+        
+        const visitIteration = function (iteration, currentPath) {
+            currentPath = currentPath ? currentPath + "\\" : "";
+            currentPath = currentPath + iteration.name;
+            iterations.push({
+                id: iteration.id,
+                name: currentPath,
+            });
+
+            if (iteration.children && iteration.children.length > 0) {
+                _.forEach(iteration.children, function (child) {
+                    visitIteration(child, currentPath);
+                });
+            }
+        };
+
+        visitIteration(iterationsData);
+        
+        project.iterations = _.sortBy(iterations, function (iteration) {
+            return iteration.id;
         });
 
         project.metadataLoaded = true;
@@ -929,6 +963,15 @@ const ModalApp = BaseApp.extend({
             this.renderTemplate("areas", {
                 areas: project.areas,
             }),
+        );
+        done();
+    },
+    drawIterationsList: function (select, projectId) {
+        var [project, done] = this.getProjectById(projectId);
+        select.html(
+            this.renderTemplate('iterations', {
+                iterations: project.iterations
+            })
         );
         done();
     },

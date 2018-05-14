@@ -1,0 +1,3 @@
+{{#each iterations}}
+<option value="{{id}}">{{name}}</option>
+{{/each}}
