@@ -1038,18 +1038,6 @@ const App = (function() {
                 return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name);
             });
         },
-        buildPatchToAddWorkItemField: function(fieldName, value) {
-            // Check if the field type is html to replace newlines by br
-            if (this.isHtmlContentField(fieldName)) {
-                value = value.replace(/\n/g, "<br>");
-            }
-
-            return {
-                op: "add",
-                path: helpers.fmt("/fields/%@", fieldName),
-                value: value,
-            };
-        },
         isHtmlContentField: function(fieldName) {
             var field = this.getFieldByFieldRefName(fieldName);
 
@@ -1059,26 +1047,6 @@ const App = (function() {
             } else {
                 return false;
             }
-        },
-        buildPatchToAddWorkItemHyperlink: function(url, name, comment) {
-            return {
-                op: "add",
-                path: "/relations/-",
-                value: {
-                    rel: "Hyperlink",
-                    url: url,
-                    attributes: {
-                        name: name,
-                        comment: comment,
-                    },
-                },
-            };
-        },
-        buildPatchToRemoveWorkItemHyperlink: function(pos) {
-            return {
-                op: "remove",
-                path: helpers.fmt("/relations/%@", pos),
-            };
         },
         getAjaxErrorMessage: function(jqXHR, errMsg) {
             errMsg = errMsg || this.I18n.t("errorAjax"); //Let's try get a friendly message based on some cases
@@ -1093,36 +1061,6 @@ const App = (function() {
 
             var detail = this.I18n.t("errorServer").fmt(jqXHR.status, jqXHR.statusText, serverErrMsg);
             return errMsg + " " + detail;
-        },
-        buildPatchToAddWorkItemAttachments: async function(attachments) {
-            const _ticket7 = await wrapZafClient(this.zafClient, "ticket");
-
-            return _.map(
-                attachments,
-                async function(att) {
-                    return this.buildPatchToAddWorkItemHyperlink(
-                        att.url,
-                        VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + _ticket7.id,
-                        att.name,
-                    );
-                }.bind(this),
-            );
-        },
-        getSelectedAttachments: function($modal) {
-            var attachments = [];
-            $modal.find(".attachments input").each(
-                function(ix, el) {
-                    var $el = this.$(el);
-
-                    if ($el.is(":checked")) {
-                        attachments.push({
-                            url: $el.val(),
-                            name: $el.data("fileName"),
-                        });
-                    }
-                }.bind(this),
-            );
-            return attachments;
         },
         buildAccountUrl: function() {
             var baseUrl;

@@ -1,5 +1,7 @@
 # Visual Studio Team Services App for Zendesk
 
+![master build](https://mseng.visualstudio.com/_apis/public/build/definitions/b924d696-3eae-4116-8443-9a18392d8544/6993/badge)
+
 > Get the [latest version](https://github.com/Microsoft/vsts-zendesk-app/releases) of the app
 
 Unite your customer support and development teams. Quickly create or link work items to tickets, enable efficient two-way communication, and stop using email to check status.
@@ -38,4 +40,3 @@ See [full instructions](https://www.visualstudio.com/docs/marketplace/integrate/
 4. Pick and the Visual Studio Team Services event which will post to Zendesk
 5. Tell Zendesk what to do when the event occurs
 6. Test the service hook subscription and finish the wizard
-
