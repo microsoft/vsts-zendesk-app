@@ -626,7 +626,6 @@ const ModalApp = BaseApp.extend({
         }
 
         const description = $modal.find(".description").val();
-        // var attachments = this.getSelectedAttachments($modal);
         let operations = [].concat(
             this.buildPatchToAddWorkItemField("System.Title", summary),
             this.buildPatchToAddWorkItemField("System.Description", description),
@@ -642,8 +641,9 @@ const ModalApp = BaseApp.extend({
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
-        } //Set tag
-
+        } 
+        
+        //Set tag
         if (this.setting("vso_tag")) {
             operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
         }
@@ -654,7 +654,10 @@ const ModalApp = BaseApp.extend({
         );
 
         //Add hyperlinks to attachments
-        //operations = operations.concat(await this.buildPatchToAddWorkItemAttachments(attachments));
+        const attachments = this.getSelectedAttachments($modal);
+        if (attachments.length > 0) {
+            operations = operations.concat(this.buildPatchToAddWorkItemAttachments(attachments, ticket));
+        }
 
         try {
             const data = await this.execQueryOnSidebar(["ajax", "createVsoWorkItem", proj.id, workItemType.name, operations]);
@@ -787,6 +790,33 @@ const ModalApp = BaseApp.extend({
             },
         };
     },
+    buildPatchToAddWorkItemAttachments: function(attachments, ticket) {
+        return _.map(
+            attachments,
+            function(att) {
+                return this.buildPatchToAddWorkItemHyperlink(
+                    att.url,
+                    VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + ticket.id,
+                    att.name,
+                );
+            }.bind(this),
+        );
+    },
+    getSelectedAttachments: function($modal) {
+        var attachments = [];
+        $modal.find(".attachments input").each(
+            function(ix, el) {
+                var $el = this.$(el);
+                if ($el.is(":checked")) {
+                    attachments.push({
+                        url: $el.val(),
+                        name: $el.attr("data-file-name"),
+                    });
+                }
+            }.bind(this),
+        );
+        return attachments;
+    },    
     buildPatchToRemoveWorkItemHyperlink: function(pos) {
         return {
             op: "remove",

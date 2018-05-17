@@ -3,6 +3,7 @@
 </p>
 <textarea placeholder="{{t "modals.notify.placeholder"}}"></textarea>
 <a href="#" class="copyLastComment">{{t "modals.notify.copyLastComment"}}</a>
+<!-- Temporarily remove because there isn't support for adding/removing attachment links
 {{#if attachments.length}}
     <div>
       <label>{{t "modals.new.fields.attachments"}}</label>
@@ -11,7 +12,7 @@
           {{#each attachments}}
             <li>
               <label>
-                <input type='checkbox' value='{{content_url}}' data-file-name='{{file_name}}'>
+                <input type='checkbox' value='{{content_url}}' data-file-name='{{file_name}}' checked>
                 {{#if thumbnails.length}}
                   <img src="{{thumbnails.0.content_url}}">
                 {{/if}}
@@ -22,6 +23,6 @@
         </ul>
       </div>
     </div>
-{{/if}}
+{{/if}}-->
 </form>
 <div class="loading" style='display:none'>{{spinner "dotted"}}</div>
