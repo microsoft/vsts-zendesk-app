@@ -146,6 +146,11 @@ const App = (function() {
                     type: "GET",
                 };
             },
+            getOrganizations: async function() {
+                const ticket = await wrapZafClient(this.zafClient, "ticket");
+
+                return ticket.organization.name;
+            },
             addTagToTicket: async function(tag) {
                 const ticket = await wrapZafClient(this.zafClient, "ticket");
                 return {
@@ -208,6 +213,11 @@ const App = (function() {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/classificationnodes/areas", projectId), {
                     $depth: 9999,
                 });
+            },
+            getVsoProjectIterations: function (projectId) { 
+                return this.vsoRequest(helpers.fmt('/%@/_apis/wit/classificationnodes/iterations', projectId), { 
+                    $depth: 9999 
+                } ); 
             },
             getVsoProjectWorkItemQueries: function(projectName) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/queries", projectName), {
@@ -569,6 +579,7 @@ const App = (function() {
                 .then(
                     function() {
                         this.drawAreasList($modal.find(".area"), projId);
+                        this.drawIterationsList($modal.find('.iteration'), projId);
                         this.drawTypesList($modal.find(".type"), projId);
                         $modal.find(".type").change();
                         this.hideSpinnerInModal($modal);
@@ -756,6 +767,14 @@ const App = (function() {
                 }),
             );
         },
+        drawIterationsList: function (select, projectId) {
+            var project = this.getProjectById(projectId);
+            select.html(
+                this.renderTemplate('iterations', { 
+                    iterations: project.iterations 
+                })
+            );
+        }, 
         drawSettings: function() {
             const fields = getVm("fields");
             var settings = _.sortBy(
@@ -1014,7 +1033,31 @@ const App = (function() {
                     });
                 }.bind(this),
             );
-            return this.when(loadWorkItemTypes, loadAreas).then(function() {
+            var loadIterations = this.ajax("getVsoProjectIterations", project.id).then(
+                function(rootIteration) {
+                    var iterations = []; 
+
+                    var visitIteration = function(iteration, currentPath) {
+                        currentPath = currentPath ? currentPath + "\\" : "";
+                        currentPath = currentPath + iteration.name;
+                        iterations.push({
+                            id: iteration.id,
+                            name: currentPath,
+                        });
+
+                        if (iteration.children && iteration.children.length > 0) {
+                            _.forEach(iteration.children, function(child) {
+                                visitIteration(child, currentPath);
+                            });
+                        }
+                    };
+                    visitIteration(rootIteration);
+                    project.iterations = _.sortBy(iterations, function(iteration) {
+                        return iteration.id;
+                    });
+                }.bind(this),
+            );
+            return this.when(loadWorkItemTypes, loadAreas, loadIterations).then(function() {
                 project.metadataLoaded = true;
             });
         },
@@ -1038,6 +1081,18 @@ const App = (function() {
                 return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name);
             });
         },
+        buildPatchToAddWorkItemField: function(fieldName, value) {
+            // Check if the field type is html to replace newlines by br
+            if (this.isHtmlContentField(fieldName)) {
+                value = value.replace(/\n/g, "<br>");
+            }
+
+            return {
+                op: "add",
+                path: helpers.fmt("/fields/%@", fieldName),
+                value: value,
+            };
+        },
         isHtmlContentField: function(fieldName) {
             var field = this.getFieldByFieldRefName(fieldName);
 
@@ -1047,6 +1102,26 @@ const App = (function() {
             } else {
                 return false;
             }
+        },
+        buildPatchToAddWorkItemHyperlink: function(url, name, comment) {
+            return {
+                op: "add",
+                path: "/relations/-",
+                value: {
+                    rel: "Hyperlink",
+                    url: url,
+                    attributes: {
+                        name: name,
+                        comment: comment,
+                    },
+                },
+            };
+        },
+        buildPatchToRemoveWorkItemHyperlink: function(pos) {
+            return {
+                op: "remove",
+                path: helpers.fmt("/relations/%@", pos),
+            };
         },
         getAjaxErrorMessage: function(jqXHR, errMsg) {
             errMsg = errMsg || this.I18n.t("errorAjax"); //Let's try get a friendly message based on some cases
@@ -1061,6 +1136,36 @@ const App = (function() {
 
             var detail = this.I18n.t("errorServer").fmt(jqXHR.status, jqXHR.statusText, serverErrMsg);
             return errMsg + " " + detail;
+        },
+        buildPatchToAddWorkItemAttachments: async function(attachments) {
+            const _ticket7 = await wrapZafClient(this.zafClient, "ticket");
+
+            return _.map(
+                attachments,
+                async function(att) {
+                    return this.buildPatchToAddWorkItemHyperlink(
+                        att.url,
+                        VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + _ticket7.id,
+                        att.name,
+                    );
+                }.bind(this),
+            );
+        },
+        getSelectedAttachments: function($modal) {
+            var attachments = [];
+            $modal.find(".attachments input").each(
+                function(ix, el) {
+                    var $el = this.$(el);
+
+                    if ($el.is(":checked")) {
+                        attachments.push({
+                            url: $el.val(),
+                            name: $el.data("fileName"),
+                        });
+                    }
+                }.bind(this),
+            );
+            return attachments;
         },
         buildAccountUrl: function() {
             var baseUrl;

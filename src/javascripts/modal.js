@@ -158,6 +158,8 @@ const ModalApp = BaseApp.extend({
         const parentClient = this.zafClient.instance(parentGuid);
         this._parentClient = parentClient;
 
+
+
         setMessageArg(this._context.instanceGuid);
         parentClient.trigger("registered.done");
 
@@ -613,6 +615,7 @@ const ModalApp = BaseApp.extend({
 
         // read area id
         const areaId = $modal.find(".area").val(); //check work item type
+        var iterationId = $modal.find('.iteration').val();
 
         const workItemType = this.getWorkItemTypeByName(proj, $modal.find(".type").val());
         if (!workItemType) {
@@ -626,6 +629,7 @@ const ModalApp = BaseApp.extend({
         }
 
         const description = $modal.find(".description").val();
+        // var attachments = this.getSelectedAttachments($modal);
         let operations = [].concat(
             this.buildPatchToAddWorkItemField("System.Title", summary),
             this.buildPatchToAddWorkItemField("System.Description", description),
@@ -635,17 +639,24 @@ const ModalApp = BaseApp.extend({
             operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
         }
 
+        if (iterationId) {
+            operations.push(this.buildPatchToAddWorkItemField("System.IterationId", iterationId));
+          }
+
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find(".severity").val()) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find(".severity").val()));
         }
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
-        } 
-        
-        //Set tag
-        if (this.setting("vso_tag")) {
-            operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
+        } //Set tag
+
+       
+        console.log(ticket);
+
+       // if (this.setting("vso_tag")) {
+        if (ticket.organization) {
+            operations.push(this.buildPatchToAddWorkItemField("System.Tags", ticket.organization.name));
         }
 
         //Add hyperlink to ticket url
@@ -654,10 +665,7 @@ const ModalApp = BaseApp.extend({
         );
 
         //Add hyperlinks to attachments
-        const attachments = this.getSelectedAttachments($modal);
-        if (attachments.length > 0) {
-            operations = operations.concat(this.buildPatchToAddWorkItemAttachments(attachments, ticket));
-        }
+        //operations = operations.concat(await this.buildPatchToAddWorkItemAttachments(attachments));
 
         try {
             const data = await this.execQueryOnSidebar(["ajax", "createVsoWorkItem", proj.id, workItemType.name, operations]);
@@ -790,33 +798,6 @@ const ModalApp = BaseApp.extend({
             },
         };
     },
-    buildPatchToAddWorkItemAttachments: function(attachments, ticket) {
-        return _.map(
-            attachments,
-            function(att) {
-                return this.buildPatchToAddWorkItemHyperlink(
-                    att.url,
-                    VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX + ticket.id,
-                    att.name,
-                );
-            }.bind(this),
-        );
-    },
-    getSelectedAttachments: function($modal) {
-        var attachments = [];
-        $modal.find(".attachments input").each(
-            function(ix, el) {
-                var $el = this.$(el);
-                if ($el.is(":checked")) {
-                    attachments.push({
-                        url: $el.val(),
-                        name: $el.attr("data-file-name"),
-                    });
-                }
-            }.bind(this),
-        );
-        return attachments;
-    },    
     buildPatchToRemoveWorkItemHyperlink: function(pos) {
         return {
             op: "remove",
@@ -847,7 +828,9 @@ const ModalApp = BaseApp.extend({
         this.loadProjectMetadata(projId)
             .then(
                 function() {
+                    console.log('Model new item');
                     this.drawAreasList($modal.find(".area"), projId);
+                    this.drawIterationsList($modal.find('.iteration'), projId);
                     this.drawTypesList($modal.find(".type"), projId);
                     $modal.find(".type").change();
                     this.hideBusy();
@@ -902,6 +885,33 @@ const ModalApp = BaseApp.extend({
         visitArea(areaData);
         project.areas = _.sortBy(areas, function(area) {
             return area.name;
+        });
+
+
+        //------
+
+        const iterationsData = await this.execQueryOnSidebar(["ajax", "getVsoProjectIterations", project.id]);
+        var iterations = []; 
+        
+        const visitIteration = function (iteration, currentPath) {
+            currentPath = currentPath ? currentPath + "\\" : "";
+            currentPath = currentPath + iteration.name;
+            iterations.push({
+                id: iteration.id,
+                name: currentPath,
+            });
+
+            if (iteration.children && iteration.children.length > 0) {
+                _.forEach(iteration.children, function (child) {
+                    visitIteration(child, currentPath);
+                });
+            }
+        };
+
+        visitIteration(iterationsData);
+        
+        project.iterations = _.sortBy(iterations, function (iteration) {
+            return iteration.id;
         });
 
         project.metadataLoaded = true;
@@ -959,6 +969,15 @@ const ModalApp = BaseApp.extend({
             this.renderTemplate("areas", {
                 areas: project.areas,
             }),
+        );
+        done();
+    },
+    drawIterationsList: function (select, projectId) {
+        var [project, done] = this.getProjectById(projectId);
+        select.html(
+            this.renderTemplate('iterations', {
+                iterations: project.iterations
+            })
         );
         done();
     },
