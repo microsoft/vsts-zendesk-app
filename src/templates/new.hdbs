@@ -22,6 +22,13 @@
         </div>
         
         <div class='control-group'>
+            <label class='control-label' for='iteration'>{{t "modals.new.fields.iteration"}}</label>
+            <div class='controls'>
+                <select id='iteration' class='iteration input-xlarge'></select>
+            </div>
+        </div>   
+
+        <div class='control-group'>
             <label class='control-label' for='type'>{{t "modals.new.fields.type"}}</label>
             <div class='controls'>
                 <select id='type' class='type input-xlarge'></select>
