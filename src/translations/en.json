@@ -1,14 +1,14 @@
 {
     "app": {
-        "name": "vsts-zendesk-app",
+        "name": "devops-zendesk-app",
         "parameters": {
             "vso_account": {
-                "label": "Visual Studio Team Services account name",
+                "label": "DevOps account name",
                 "helpText":
                     "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
             },
             "vso_tag": {
-                "label": "Visual Studio Team Services work item tag",
+                "label": "DevOps work item tag",
                 "helpText":
                     "Enter the tag you want to add to each Visual Studio Team Services linked work item. If empty, no tag will be added."
             },
@@ -120,20 +120,20 @@
     "notify": {
         "message":
             "-- This notification was sent from Zendesk to all linked Visual Studio Team Services work items by {{name}}. --",
-        "vso": "Notification from Visual Studio Team Services work item {{workItemKey}}",
-        "notification": "The linked Visual Studio Team Services work items have been notified",
-        "workItemCreated": "Work item created in Visual Studio Team Services with id: %@",
-        "workItemLinked": "Ticket linked with Visual Studio Team Services work item with id: %@",
-        "workItemUnlinked": "Ticket unlinked of Visual Studio Team Services work item with id: %@",
+        "vso": "Notification from DevOps work item {{workItemKey}}",
+        "notification": "The linked DevOps work items have been notified",
+        "workItemCreated": "Work item created in DevOps work item with id: %@",
+        "workItemLinked": "Ticket linked with VDevOps work item with id: %@",
+        "workItemUnlinked": "Ticket unlinked of DevOps work item with id: %@",
         "credentialsSaved": "Saved Successfully"
     },
-    "finishSetup": "You didn't finish your app configuration: your Visual Studio Team Services account is empty.",
+    "finishSetup": "You didn't finish your app configuration: your DevOps account is empty.",
     "errorAjax": "There was an error contacting with the server. Please try again",
     "errorServer": "[%@ %@: %@]",
     "errorLoadingApp":
-        "Something went wrong while loading the app. Confirm that your Visual Studio Team Services alternate credentials are correct by clicking in the user icon.",
+        "Something went wrong while loading the app. Confirm that your DevOps alternate credentials are correct by clicking in the user icon.",
     "errorInvalidAccount":
-        "The Visual Studio Team Services account '{{accountName}}' doesn't exist or you don't have access to it. Contact your Zendesk account Administrator to check and review the app settings.",
+        "The DevOps account '{{accountName}}' doesn't exist or you don't have access to it. Contact your Zendesk account Administrator to check and review the app settings.",
     "errorLoadingWorkItems": "Something went wrong while loading working items. Click the refresh icon to try again.",
     "errorOoops": "Ooops!",
     "errorReadingFieldSettings": "There was an error while reading field settings. Applying default settings."
