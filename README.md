@@ -1,14 +1,16 @@
-# Visual Studio Team Services App for Zendesk
+# DevOps App for Zendesk
 
 ![master build](https://mseng.visualstudio.com/_apis/public/build/definitions/b924d696-3eae-4116-8443-9a18392d8544/6993/badge)
 
-> Get the [latest version](https://github.com/Microsoft/vsts-zendesk-app/releases) of the app
+> Get the [latest version](https://github.com/CieloCosta/devops-zendesk-app/releases) of the app
 
 Unite your customer support and development teams. Quickly create or link work items to tickets, enable efficient two-way communication, and stop using email to check status.
 
+> This is a fork of [https://github.com/Microsoft/vsts-zendesk-app](https://github.com/Microsoft/vsts-zendesk-app)
+
 ### Create work items for your engineers right from Zendesk
 
-With the Visual Studio Team Services app for Zendesk, users in Zendesk can quickly create a new work item from a Zendesk ticket.
+With the DevOps app for Zendesk, users in Zendesk can quickly create a new work item from a Zendesk ticket.
 
 ![img](images/zendesk-screen1.png)
 
@@ -22,7 +24,7 @@ Give your customer support team easy access to the information they need. See de
 
 ### Install the app to Zendesk
 
-1. [Download the latest release](https://github.com/Microsoft/vsts-zendesk-app/releases) .zip file
+1. [Download the latest release](https://github.com/CieloCosta/DevOps-zendesk-app/releases) .zip file
 1. From Zendesk, click the settings icon (gear)
 1. Under **Apps** click Manage.
 1. Click **Upload private app**
@@ -34,7 +36,7 @@ See [full instructions](https://www.visualstudio.com/docs/marketplace/integrate/
 
 ### Send updates from Visual Studio Team Services to Zendesk
 
-1. Open the admin page for the team project in Visual Studio Team Services
+1. Open the admin page for the team project in DevOps
 2. On the *Service Hooks* tab, run the subscription wizard
 3. Select Zendesk from the subscription wizard
 4. Pick and the Visual Studio Team Services event which will post to Zendesk
