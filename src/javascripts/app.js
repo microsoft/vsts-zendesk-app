@@ -101,7 +101,7 @@ const App = (function() {
         }),
         VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
         VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-        VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
+        VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Task", "Improvement", "User Story", "Feature"],
         VSO_PROJECTS_PAGE_SIZE = 100; //#endregion
 
     return {
