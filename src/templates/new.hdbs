@@ -27,7 +27,8 @@
                 <select id='type' class='type input-xlarge'></select>
             </div>
         </div>
-        <div class='control-group severityInput'>
+
+        <!-- <div class='control-group severityInput'>
             <label class='control-label' for='severity'>{{t "modals.new.fields.severity"}}</label>
             <div class='controls'>
                 <select id='severity' class='severity input-xlarge'>
@@ -37,7 +38,7 @@
                     <option value='4 - Low'>4 - Low</option>
                 </select>
             </div>
-        </div>
+        </div> -->
 
         <div class='control-group'>
             <label class='control-label' for='summary'>{{t "modals.new.fields.summary"}}</label>
