@@ -3,17 +3,25 @@
         "name": "devops-zendesk-app",
         "parameters": {
             "vso_account": {
+<<<<<<< HEAD
                 "label": "DevOps account name",
+=======
+                "label": "Azure DevOps account name",
+>>>>>>> Changed "Visual Studio" to "DevOps"
                 "helpText":
-                    "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
+                    "Enter your Azure DevOps subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
             },
             "vso_tag": {
+<<<<<<< HEAD
                 "label": "DevOps work item tag",
+=======
+                "label": "Azure DevOps work item tag",
+>>>>>>> Changed "Visual Studio" to "DevOps"
                 "helpText":
-                    "Enter the tag you want to add to each Visual Studio Team Services linked work item. If empty, no tag will be added."
+                    "Enter the tag you want to add to each Azure DevOps linked work item. If empty, no tag will be added."
             },
             "vso_wi_description_template": {
-                "label": "Visual Studio Team Services work item description template",
+                "label": "Azure DevOps work item description template",
                 "helpText":
                     "Enter the text you want to allow to be used as a work item description template while creating new work items. If empty, no content will be suggested."
             }
@@ -31,7 +39,7 @@
         "title": "Administration",
         "summary": "Summary",
         "details": "Details",
-        "settingsSaved": "Your Visual Studio Team Services settings have been saved."
+        "settingsSaved": "Your Azure DevOps settings have been saved."
     },
     "login": {
         "title": "Login",
@@ -66,7 +74,7 @@
             "text": "Are you sure you want to unlink <strong>{{name}}</strong> from this ticket?",
             "close": "No, don't do anything",
             "accept": "Yes, unlink it.",
-            "errUnlink": "Could not unlink ticket in Visual Studio Team Services. Please try again."
+            "errUnlink": "Could not unlink ticket in Azure DevOps. Please try again."
         },
         "link": {
             "title": "Link to a work item",
@@ -86,10 +94,10 @@
             "errAlreadyLinked": "This ticket is already linked that work item."
         },
         "new": {
-            "title": "New Visual Studio Team Services Work Item",
+            "title": "New Azure DevOps Work Item",
             "close": "Close",
             "accept": "Create work item",
-            "help": "Fill this form to create a new Visual Studio Team Services work item and link it to this ticket.",
+            "help": "Fill this form to create a new Azure DevOps work item and link it to this ticket.",
             "automatic": "Automatic",
             "errProjRequired": "The project is required",
             "errWorkItemTypeRequired": "The work item type is required",
@@ -119,21 +127,21 @@
     },
     "notify": {
         "message":
-            "-- This notification was sent from Zendesk to all linked Visual Studio Team Services work items by {{name}}. --",
-        "vso": "Notification from DevOps work item {{workItemKey}}",
-        "notification": "The linked DevOps work items have been notified",
-        "workItemCreated": "Work item created in DevOps work item with id: %@",
-        "workItemLinked": "Ticket linked with VDevOps work item with id: %@",
-        "workItemUnlinked": "Ticket unlinked of DevOps work item with id: %@",
+            "-- This notification was sent from Zendesk to all linked Azure DevOps work items by {{name}}. --",
+        "vso": "Notification from Azure DevOps work item {{workItemKey}}",
+        "notification": "The linked Azure DevOps work items have been notified",
+        "workItemCreated": "Work item created in Azure DevOps with id: %@",
+        "workItemLinked": "Ticket linked with Azure DevOps work item with id: %@",
+        "workItemUnlinked": "Ticket unlinked of Azure DevOps work item with id: %@",
         "credentialsSaved": "Saved Successfully"
     },
-    "finishSetup": "You didn't finish your app configuration: your DevOps account is empty.",
+    "finishSetup": "You didn't finish your app configuration: your Azure DevOps account is empty.",
     "errorAjax": "There was an error contacting with the server. Please try again",
     "errorServer": "[%@ %@: %@]",
     "errorLoadingApp":
-        "Something went wrong while loading the app. Confirm that your DevOps alternate credentials are correct by clicking in the user icon.",
+        "Something went wrong while loading the app. Confirm that your Azure DevOps alternate credentials are correct by clicking in the user icon.",
     "errorInvalidAccount":
-        "The DevOps account '{{accountName}}' doesn't exist or you don't have access to it. Contact your Zendesk account Administrator to check and review the app settings.",
+        "The Azure DevOps account '{{accountName}}' doesn't exist or you don't have access to it. Contact your Zendesk account Administrator to check and review the app settings.",
     "errorLoadingWorkItems": "Something went wrong while loading working items. Click the refresh icon to try again.",
     "errorOoops": "Ooops!",
     "errorReadingFieldSettings": "There was an error while reading field settings. Applying default settings."
