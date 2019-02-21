@@ -48,7 +48,7 @@
     "costa",
     "zendesk"
   ],
-  "name": "vsts-zendesk-app",
+  "name": "devops-zendesk-app",
   "repository": {
     "type": "git",
     "url": "https://github.com/CieloCosta/devops-zendesk-app"
