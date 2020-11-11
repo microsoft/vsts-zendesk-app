@@ -861,11 +861,12 @@ const ModalApp = BaseApp.extend({
             );
     },
     fillComboWithProjects: function(el) {
+        var defaultProject = getVm("settings[vso_default_project]");
         el.html(
             _.reduce(
                 getVm("projects"),
                 function(options, project) {
-                    return "%@<option value='%@'>%@</option>".fmt(options, project.id, project.name);
+                    return "%@<option value='%@' %@>%@</option>".fmt(options, project.id, project.name === defaultProject ? 'selected' : '', project.name);
                 },
                 "",
             ),
@@ -978,7 +979,9 @@ const ModalApp = BaseApp.extend({
         }
     },
     restrictToAllowedWorkItems: function(wits) {
+        var defaultWorkItem = getVm("settings[vso_default_workitem]");
         return _.filter(wits, function(wit) {
+            wit.selected = wit.name === defaultWorkItem ? 'selected' : '';
             return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name);
         });
     },

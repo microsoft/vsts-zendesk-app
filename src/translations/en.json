@@ -11,6 +11,14 @@
                 "label": "Workitem Tag Prefix",
                 "helpText": "When linking azure board items, tags with this prefix will be added to zendesk ticket. When using multiple azure organizations this must be distinct for each organization."
             },
+            "vso_default_project": {
+                "label": "Default Project",
+                "helpText": "Project to be preselected when adding azure work items."
+            },
+            "vso_default_workitem": {
+                "label": "Default Work Item",
+                "helpText": "Work Item to be preselected when adding azure work items."
+            },
             "vso_tag": {
                 "label": "Visual Studio Team Services work item tag",
                 "helpText":

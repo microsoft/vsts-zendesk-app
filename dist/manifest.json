@@ -26,6 +26,16 @@
       "default":"vso_wi_"
     },
     {
+      "name": "vso_default_project",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "vso_default_workitem",
+      "type": "text",
+      "required": false
+    },
+    {
       "name": "vso_tag",
       "type": "text",
       "required": false,

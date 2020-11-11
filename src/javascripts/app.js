@@ -451,7 +451,11 @@ const App = (function() {
                 fieldSettings: {},
                 userProfile: {},
                 isAppLoadedOk: false,
-                settings: { "vso_wi_description_template": this.setting("vso_wi_description_template") }
+                settings: { 
+                    "vso_wi_description_template": this.setting("vso_wi_description_template"),
+                    "vso_default_project": this.setting("vso_default_project"),
+                    "vso_default_workitem": this.setting("vso_default_workitem")
+                }
             });
 
             if (data.firstLoad) {

@@ -1,3 +1,3 @@
 {{#each types}}
-<option value="{{name}}">{{name}}</option>
+<option value="{{name}}" {{selected}}>{{name}}</option>
 {{/each}}
