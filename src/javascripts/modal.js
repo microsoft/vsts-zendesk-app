@@ -134,7 +134,6 @@ var INSTALLATION_ID = 0,
     }),
     VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
     VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-    VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
     VSO_PROJECTS_PAGE_SIZE = 100; //#endregion
 
 // Create a new ZAFClient
@@ -901,6 +900,12 @@ const ModalApp = BaseApp.extend({
         };
 
         visitArea(areaData);
+        var validAreasString = getVm("settings[vso_valid_areas]");
+        if(validAreasString){
+            var validAreas = validAreasString.split(',').map(a => a.trim());
+            areas = areas.filter(a => validAreas.indexOf(a.name) >= 0);
+        }
+        
         project.areas = _.sortBy(areas, function(area) {
             return area.name;
         });
@@ -980,9 +985,16 @@ const ModalApp = BaseApp.extend({
     },
     restrictToAllowedWorkItems: function(wits) {
         var defaultWorkItem = getVm("settings[vso_default_workitem]");
+
+        var validWorkItemsString = getVm("settings[vso_valid_workitems]");
+        var validWorkItems = [];
+        if(validWorkItemsString){
+            validWorkItems = validWorkItemsString.split(',').map(wit => wit.trim());
+        }
+
         return _.filter(wits, function(wit) {
             wit.selected = wit.name === defaultWorkItem ? 'selected' : '';
-            return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name);
+            return !wit.isDisabled && (!validWorkItemsString || _.contains(validWorkItems, wit.name));
         });
     },
     attachRestrictedFieldsToWorkItem: function(workItem, type) {

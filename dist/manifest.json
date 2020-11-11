@@ -31,6 +31,17 @@
       "required": false
     },
     {
+      "name": "vso_valid_areas",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "vso_valid_workitems",
+      "type": "text",
+      "required": false,
+      "default": "Bug"
+    },
+    {
       "name": "vso_default_workitem",
       "type": "text",
       "required": false

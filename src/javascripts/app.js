@@ -454,6 +454,8 @@ const App = (function() {
                 settings: { 
                     "vso_wi_description_template": this.setting("vso_wi_description_template"),
                     "vso_default_project": this.setting("vso_default_project"),
+                    "vso_valid_areas": this.setting("vso_valid_areas"),
+                    "vso_valid_workitems": this.setting("vso_valid_workitems"),
                     "vso_default_workitem": this.setting("vso_default_workitem")
                 }
             });

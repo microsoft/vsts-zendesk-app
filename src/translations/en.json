@@ -15,6 +15,14 @@
                 "label": "Default Project",
                 "helpText": "Project to be preselected when adding azure work items."
             },
+            "vso_valid_areas": {
+                "label": "Valid Areas",
+                "helpText": "Comma separated list of area paths to be available for selection. Leave empty to show all areas."
+            },
+            "vso_valid_workitems": {
+                "label": "Valid Work Items",
+                "helpText": "Comma separated list of work item names that will be available when adding azure work items. List all work item types across different projects."
+            },
             "vso_default_workitem": {
                 "label": "Default Work Item",
                 "helpText": "Work Item to be preselected when adding azure work items."
