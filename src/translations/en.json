@@ -27,6 +27,10 @@
                 "label": "Default Work Item",
                 "helpText": "Work Item to be preselected when adding azure work items."
             },
+            "vso_additional_fields": {
+                "label": "Additional Fields",
+                "helpText": "Comma separated list of additional fields that will be available when adding azure work items. List all fields across different work item types. Order the fields as you want them to appear on the form."
+            },
             "vso_tag": {
                 "label": "Visual Studio Team Services work item tag",
                 "helpText":

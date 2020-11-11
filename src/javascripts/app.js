@@ -82,7 +82,7 @@ const App = (function() {
     var INSTALLATION_ID = 0,
         //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
-        VSO_API_DEFAULT_VERSION = "1.0",
+        VSO_API_DEFAULT_VERSION = "6.0",
         VSO_API_RESOURCE_VERSION = {},
         TAG_PREFIX = "vso_wi_",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
@@ -204,6 +204,15 @@ const App = (function() {
             getVsoProjectWorkItemTypes: function(projectId) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/workitemtypes", projectId));
             },
+
+            getVsoWorkItemField: function(projectId, fieldName, workItemType){
+                var requestUrl = workItemType ?
+                                helpers.fmt("/%@/_apis/wit/workitemtypes/%@/fields/%@?$expand=1", projectId, workItemType, fieldName) :
+                                helpers.fmt("/%@/_apis/wit/fields/%@?$expand=1", projectId, fieldName);
+
+                return this.vsoRequest(requestUrl);
+            },
+
             getVsoProjectAreas: function(projectId) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/classificationnodes/areas", projectId), {
                     $depth: 9999,
@@ -378,6 +387,8 @@ const App = (function() {
                         refName: field.referenceName,
                         name: field.name,
                         type: field.type,
+                        isPicklist: field.isPicklist,
+                        description: field.description
                     };
                 }),
             });
@@ -456,7 +467,8 @@ const App = (function() {
                     "vso_default_project": this.setting("vso_default_project"),
                     "vso_valid_areas": this.setting("vso_valid_areas"),
                     "vso_valid_workitems": this.setting("vso_valid_workitems"),
-                    "vso_default_workitem": this.setting("vso_default_workitem")
+                    "vso_default_workitem": this.setting("vso_default_workitem"),
+                    "vso_additional_fields":this.setting("vso_additional_fields")
                 }
             });
 
@@ -472,6 +484,10 @@ const App = (function() {
                     "execute.query",
                     async function() {
                         let args = getMessageArg();
+                        if (args === null) {
+                            console.log("Executing app query without setting message arg first");
+                            return;
+                        }
                         if (typeof args === "string") {
                             args = [args];
                         }

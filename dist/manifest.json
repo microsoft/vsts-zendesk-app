@@ -47,6 +47,12 @@
       "required": false
     },
     {
+      "name": "vso_additional_fields",
+      "type": "text",
+      "required": false,
+      "default": "Severity"
+    },
+    {
       "name": "vso_tag",
       "type": "text",
       "required": false,

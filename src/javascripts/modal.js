@@ -1,6 +1,5 @@
 import ZAFClient from "zendesk_app_framework_sdk";
 import I18n from "i18n";
-import View from "view";
 import BaseApp from "base_app";
 import helpers from "helpers";
 window.helpers = helpers;
@@ -307,6 +306,8 @@ const ModalApp = BaseApp.extend({
     action_initNewWorkItem: async function() {
         const $modal = this.$("[data-main]");
         $modal.find(".modal-body").html(this.renderTemplate("loading"));
+        this.resize({ height: "520px", width: "780px" });
+
         const data = await this.execQueryOnSidebar(["ajax", "getComments"]);
         var attachments = _.flatten(
             _.map(data.comments, function(comment) {
@@ -319,13 +320,15 @@ const ModalApp = BaseApp.extend({
         $modal.find(".modal-body").html(
             this.renderTemplate("new", {
                 attachments: attachments,
-                templateDefined: templateDefined,
+                templateDefined: templateDefined
             }),
         );
+
         $modal.find(".summary").val(getVm("temp[ticket]").subject);
         var projectCombo = $modal.find(".project");
         this.fillComboWithProjects(projectCombo);
         $modal.find(".inputVsoProject").on("change", this.onNewVsoProjectChange.bind(this));
+        $modal.find("#type").on("change", this.onWorkItemTypeChange.bind(this));
         $modal.find(".copyDescription").on("click", () => {
             $modal.find(".description").val(getVm("temp[ticket]").description);
         });
@@ -340,11 +343,11 @@ const ModalApp = BaseApp.extend({
     },
 
     showBusy: function() {
-        this.$("[data-main] .busySpinner").show();
+        this.$(".busySpinner").show();
     },
 
     hideBusy: function() {
-        this.$("[data-main] .busySpinner").hide();
+        this.$(".busySpinner").hide();
     },
 
     onNewCopyTemplateClick: function(event) {
@@ -634,14 +637,20 @@ const ModalApp = BaseApp.extend({
             operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
         }
 
-        if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find(".severity").val()) {
-            operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find(".severity").val()));
-        }
+        $("[data-referenceName]").each((i,fld)=>{
+            var $fld = $(fld);
+            if(fld.type == 'checkbox'){
+                operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), $fld.prop('checked')));
+            }
+            else{
+                operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), $fld.val()));
+            }
+        });
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
-        } 
-        
+        }
+
         //Set tag
         if (this.setting("vso_tag")) {
             operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
@@ -815,7 +824,7 @@ const ModalApp = BaseApp.extend({
             }.bind(this),
         );
         return attachments;
-    },    
+    },
     buildPatchToRemoveWorkItemHyperlink: function(pos) {
         return {
             op: "remove",
@@ -848,7 +857,7 @@ const ModalApp = BaseApp.extend({
                 function() {
                     this.drawAreasList($modal.find(".area"), projId);
                     this.drawTypesList($modal.find(".type"), projId);
-                    $modal.find(".type").change();
+                    $modal.find("#type").change();
                     this.hideBusy();
                 }.bind(this),
             )
@@ -859,6 +868,29 @@ const ModalApp = BaseApp.extend({
                 }.bind(this),
             );
     },
+
+    onWorkItemTypeChange: async function(){
+        var $modal = this.$("[data-main]");
+        var projectId = $modal.find("#project").val();
+        var [project, done] = this.getProjectById(projectId);
+        var workItemTypeName = $modal.find("#type").val();
+        var workItemType = this.getWorkItemTypeByName(project, workItemTypeName);
+
+        if(workItemType.fieldDefinitions) {
+            $modal.find("#additional-fields-container").html(
+            this.renderTemplate("newWorkItemFields", {
+                fields: workItemType.fieldDefinitions.ids.map(id => {
+                        var fld = Object.assign({}, workItemType.fieldDefinitions[id]);
+                        fld.allowedValues = fld.allowedValues.map(v => ({value:v, selected: false}))
+                        var result = Object.assign({value: ''}, fld);
+                        return result;
+                    })
+                }),
+            );
+        }
+        done();
+    },
+
     fillComboWithProjects: function(el) {
         var defaultProject = getVm("settings[vso_default_project]");
         el.html(
@@ -880,6 +912,70 @@ const ModalApp = BaseApp.extend({
 
         const workItemData = await this.execQueryOnSidebar(["ajax", "getVsoProjectWorkItemTypes", project.id]);
         project.workItemTypes = this.restrictToAllowedWorkItems(workItemData.value);
+
+        let allFields = getVm('fields');
+
+        let additionalFieldsString = getVm("settings[vso_additional_fields]");
+        if(additionalFieldsString){
+            let additionalFields = [];
+            let fieldsCache = {};
+
+            if(additionalFieldsString){
+                additionalFields = additionalFieldsString.split(",").map(f => f.trim());
+            }
+            
+            let isPicklist = (fld) => {
+                return fld.isPicklist || (fld.allowedValues && fld.allowedValues.length > 0)
+            }
+
+            for (let i = 0; i < project.workItemTypes.length; i++) {
+                const wi = project.workItemTypes[i];
+                wi.fieldDefinitions = {ids:[]};
+
+                for (let afi = 0; afi < additionalFields.length; afi++) {
+                    const fldName = additionalFields[afi];
+                    let fld = _.find(wi.fieldInstances, f => f.name == fldName);
+                    if(!fld){
+                        console.log('Field Not Found ',fldName);
+                        continue;
+                    }
+                    if(fieldsCache[fld.referenceName]){
+                        wi.fieldDefinitions.ids.push(fld.name);
+                        wi.fieldDefinitions[fld.name] = fieldsCache[fld.referenceName];
+                        continue;
+                    }
+
+                    fld.escapedRef = fld.referenceName.replace('.','_');
+                    let fldExtraInfo1 = await this.execQueryOnSidebar(["ajax", "getVsoWorkItemField", project.id, fld.name, wi.name]);
+                    let fldExtraInfo2 =  _.find(allFields, f => f.refName == fld.referenceName);
+                    
+                    fld = Object.assign({}, fld, fldExtraInfo1, fldExtraInfo2);
+
+                    switch (fld.type) {
+                        case 'dateTime':
+                            fld.isDateTime = true;
+                            break;
+                        case 'string':
+                        case 'integer':
+                            fld.isText = !isPicklist(fld);
+                            break;
+                        case 'boolean':
+                            fld.isCheckBox = true
+                            fld.checked = fld.defaultValue? 'checked': '';
+                            break;
+                        default:
+                            fld.isText = true;
+                            break;
+                    }
+
+                    fld.required = fld.alwaysRequired ? 'required' : '';
+                    fld.isPicklist = isPicklist(fld);
+                    wi.fieldDefinitions.ids.push(fld.name);
+                    wi.fieldDefinitions[fld.name] = fld;
+                    fieldsCache[fld.referenceName] = fld;
+                }
+            }
+        }
 
         const areaData = await this.execQueryOnSidebar(["ajax", "getVsoProjectAreas", project.id]);
         var areas = []; // Flatten areas to format \Area 1\Area 1.1
