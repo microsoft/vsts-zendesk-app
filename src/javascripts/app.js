@@ -485,6 +485,7 @@ const App = (function() {
                     return this.switchTo("finish_setup");
                 } //set account url
 
+                TAG_PREFIX = this.setting("vso_workitem_tag_prefix");
                 assignVm({ accountUrl: this.buildAccountUrl() });
 
                 if (!this.store("auth_token_for_" + this.setting("vso_account"))) {

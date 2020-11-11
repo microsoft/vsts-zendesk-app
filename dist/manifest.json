@@ -20,6 +20,12 @@
       "required": true
     },
     {
+      "name": "vso_workitem_tag_prefix",
+      "type": "text",
+      "required": true,
+      "default":"vso_wi_"
+    },
+    {
       "name": "vso_tag",
       "type": "text",
       "required": false,

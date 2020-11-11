@@ -7,6 +7,10 @@
                 "helpText":
                     "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
             },
+            "vso_workitem_tag_prefix": {
+                "label": "Workitem Tag Prefix",
+                "helpText": "When linking azure board items, tags with this prefix will be added to zendesk ticket. When using multiple azure organizations this must be distinct for each organization."
+            },
             "vso_tag": {
                 "label": "Visual Studio Team Services work item tag",
                 "helpText":
