@@ -316,6 +316,11 @@ const ModalApp = BaseApp.extend({
             true,
         ); // Check if we have a template for decription
 
+        // Get custom fields on the ticket so that we can use them on form.
+        // Side note: due to the implementation of the queries, we cannot call both functions at once, e.g. using `await Promise.all()`
+        this.currentCustomFields = (await this.execQueryOnSidebar(["ajax", "getFullTicket"]))['ticket']['custom_fields'];
+        this.ticketFields = (await this.execQueryOnSidebar(["ajax", "getTicketFields"]))['ticket_fields'];
+
         var templateDefined = !!this.setting("vso_wi_description_template");
         $modal.find(".modal-body").html(
             this.renderTemplate("new", {
@@ -687,6 +692,54 @@ const ModalApp = BaseApp.extend({
         this.zafClient.invoke("destroy");
     },
 
+    getZDTicketField: function(ticketFields, ticketTitle) {
+        const fields = _.filter(ticketFields, function(field) {
+            return field.title === ticketTitle;
+        });
+
+        if (fields.length === 0) {
+            return null;
+        }
+
+        return fields[0];
+    },
+
+    getZDTicketValue: function(ticketTitle, ticketFields, currentCustomFields) {
+        const field = this.getZDTicketField(ticketFields, ticketTitle);
+
+        if (field === null) {
+            console.error(`Cannot find the field on ZD ticket '${ticketTitle}'`);
+            return null;
+        }
+
+        const foundFields = _.filter(currentCustomFields, function(customField) {
+            return customField.id === field.id;
+        });
+
+        if (foundFields === null || foundFields.length === 0) {
+            console.error(`Cannot find the field on ZD ticket '${ticketTitle}' in the ticket's custom fields (looking for property id with value ${field.id}): `, currentCustomFields);
+            return null;
+        }
+
+        const currentTicketField = foundFields[0];
+       
+        if(field.custom_field_options){
+            const foundOptionsValues = _.filter(field.custom_field_options, function(fieldOption) {
+                return fieldOption.value === currentTicketField.value;
+            });
+
+            if (foundOptionsValues === null || foundOptionsValues.length === 0) {
+                console.error(`Cannot find the option on ZD ticket '${currentTicketField.value}' in the defined field options (matching on the "value" field):`, field.custom_field_options);
+                return null;
+            }
+    
+            return foundOptionsValues[0].name;
+        }
+        else {
+            return currentTicketField.value;
+        }
+    },
+
     isAlreadyLinkedToWorkItem: async function(id) {
         return _.contains(await this.getLinkedWorkItemIds(), id);
     },
@@ -880,9 +933,11 @@ const ModalApp = BaseApp.extend({
             $modal.find("#additional-fields-container").html(
             this.renderTemplate("newWorkItemFields", {
                 fields: workItemType.fieldDefinitions.ids.map(id => {
+                        var ticketValue = this.getZDTicketValue(workItemType.fieldDefinitions[id].name, this.ticketFields, this.currentCustomFields);
                         var fld = Object.assign({}, workItemType.fieldDefinitions[id]);
-                        fld.allowedValues = fld.allowedValues.map(v => ({value:v, selected: false}))
-                        var result = Object.assign({value: ''}, fld);
+                        fld.allowedValues = fld.allowedValues.map(v => ({value:v, selected: (v == ticketValue)}))
+                        var result = Object.assign({value: ticketValue}, fld);
+                        console.log(`field ${workItemType.fieldDefinitions[id].name} value is ${ticketValue}`);
                         return result;
                     })
                 }),

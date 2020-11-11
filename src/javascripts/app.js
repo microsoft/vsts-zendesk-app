@@ -184,6 +184,19 @@ const App = (function() {
                     },
                 };
             },
+            getFullTicket: async function(data) {
+                const ticket = await wrapZafClient(this.zafClient, "ticket");
+                return {
+                    type: "GET",
+                    url: helpers.fmt("/api/v2/tickets/%@.json", ticket.id),
+                };
+            },
+            getTicketFields: async function(data) {
+                return {
+                    type: "GET",
+                    url: "/api/v2/ticket_fields.json",
+                };
+            },
             saveSettings: function(data) {
                 return {
                     type: "PUT",

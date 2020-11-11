@@ -11,15 +11,15 @@
         {{/if}}
 
         {{#if isCheckBox}}
-        <input type="checkbox" id='{{escapedRef}}' name="{{escapedRef}}" {{required}} data-referenceName="{{referenceName}}" class='input-xlarge'  />
+        <input type="checkbox" id='{{escapedRef}}' name="{{escapedRef}}" {{required}} data-referenceName="{{referenceName}}" class='input-xlarge' {{#if value}}checked{{/if}} />
         {{/if}}
 
         {{#if isDateTime}}
-        <input type="date" id='{{escapedRef}}' {{required}} data-referenceName="{{referenceName}}" class='input-xlarge' />
+        <input type="date" id='{{escapedRef}}' {{required}} data-referenceName="{{referenceName}}" class='input-xlarge' value="{{value}}" />
         {{/if}}
 
         {{#if isText}}
-        <input type="text" id='{{escapedRef}}' {{required}} data-referenceName="{{referenceName}}" class='input-xlarge' />
+        <input type="text" id='{{escapedRef}}' {{required}} data-referenceName="{{referenceName}}" class='input-xlarge' value="{{value}}" />
         {{/if}}
 
         <div class="input-help-text">{{helpText}}</div>
