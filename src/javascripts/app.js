@@ -498,7 +498,7 @@ const App = (function() {
                     async function() {
                         let args = getMessageArg();
                         if (args === null) {
-                            console.log("Executing app query without setting message arg first");
+                            console.warn("Executing app query without setting message arg first");
                             return;
                         }
                         if (typeof args === "string") {

@@ -9,6 +9,16 @@ String.prototype.fmt = function() {
     return helpers.fmt.apply(this, [this, ...arguments]);
 };
 
+Date.prototype.getIsoTimezoneOffset = function() {
+    var tzo = -this.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            var norm = Math.floor(Math.abs(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+    return  `${dif}${pad(tzo / 60)}:${pad(tzo % 60)}`;
+}
+
 // matches polyfill
 if (!Element.prototype.matches) {
     Element.prototype.matches =
@@ -644,12 +654,19 @@ const ModalApp = BaseApp.extend({
 
         $("[data-referenceName]").each((i,fld)=>{
             var $fld = $(fld);
-            if(fld.type == 'checkbox'){
-                operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), $fld.prop('checked')));
+            var fldValue;
+            switch (fld.type) {
+                case 'checkbox':
+                    fldValue = $fld.prop('checked')
+                    break;
+                case 'date':
+                    fldValue = `${$fld.val()}${new Date().getIsoTimezoneOffset()}`
+                    break;
+                default:
+                    fldValue = $fld.val();
+                    break;
             }
-            else{
-                operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), $fld.val()));
-            }
+            operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), fldValue));
         });
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
@@ -708,7 +725,7 @@ const ModalApp = BaseApp.extend({
         const field = this.getZDTicketField(ticketFields, ticketTitle);
 
         if (field === null) {
-            console.error(`Cannot find the field on ZD ticket '${ticketTitle}'`);
+            console.warn(`Cannot find the field on ZD ticket '${ticketTitle}'`);
             return null;
         }
 
@@ -717,7 +734,7 @@ const ModalApp = BaseApp.extend({
         });
 
         if (foundFields === null || foundFields.length === 0) {
-            console.error(`Cannot find the field on ZD ticket '${ticketTitle}' in the ticket's custom fields (looking for property id with value ${field.id}): `, currentCustomFields);
+            console.warn(`Cannot find the field on ZD ticket '${ticketTitle}' in the ticket's custom fields (looking for property id with value ${field.id}): `, currentCustomFields);
             return null;
         }
 
@@ -729,7 +746,7 @@ const ModalApp = BaseApp.extend({
             });
 
             if (foundOptionsValues === null || foundOptionsValues.length === 0) {
-                console.error(`Cannot find the option on ZD ticket '${currentTicketField.value}' in the defined field options (matching on the "value" field):`, field.custom_field_options);
+                console.warn(`Cannot find the option on ZD ticket '${currentTicketField.value}' in the defined field options (matching on the "value" field):`, field.custom_field_options);
                 return null;
             }
     
@@ -937,7 +954,6 @@ const ModalApp = BaseApp.extend({
                         var fld = Object.assign({}, workItemType.fieldDefinitions[id]);
                         fld.allowedValues = fld.allowedValues.map(v => ({value:v, selected: (v == ticketValue)}))
                         var result = Object.assign({value: ticketValue}, fld);
-                        console.log(`field ${workItemType.fieldDefinitions[id].name} value is ${ticketValue}`);
                         return result;
                     })
                 }),
@@ -991,7 +1007,6 @@ const ModalApp = BaseApp.extend({
                     const fldName = additionalFields[afi];
                     let fld = _.find(wi.fieldInstances, f => f.name == fldName);
                     if(!fld){
-                        console.log('Field Not Found ',fldName);
                         continue;
                     }
                     if(fieldsCache[fld.referenceName]){
