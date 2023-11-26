@@ -82,7 +82,7 @@ const App = (function() {
     var INSTALLATION_ID = 0,
         //For dev purposes, when using Zat, set this to your current installation id
         VSO_URL_FORMAT = "https://%@.visualstudio.com/DefaultCollection",
-        VSO_API_DEFAULT_VERSION = "1.0",
+        VSO_API_DEFAULT_VERSION = "6.0",
         VSO_API_RESOURCE_VERSION = {},
         TAG_PREFIX = "vso_wi_",
         DEFAULT_FIELD_SETTINGS = JSON.stringify({
@@ -184,6 +184,19 @@ const App = (function() {
                     },
                 };
             },
+            getFullTicket: async function(data) {
+                const ticket = await wrapZafClient(this.zafClient, "ticket");
+                return {
+                    type: "GET",
+                    url: helpers.fmt("/api/v2/tickets/%@.json", ticket.id),
+                };
+            },
+            getTicketFields: async function(data) {
+                return {
+                    type: "GET",
+                    url: "/api/v2/ticket_fields.json",
+                };
+            },
             saveSettings: function(data) {
                 return {
                     type: "PUT",
@@ -204,6 +217,15 @@ const App = (function() {
             getVsoProjectWorkItemTypes: function(projectId) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/workitemtypes", projectId));
             },
+
+            getVsoWorkItemField: function(projectId, fieldName, workItemType){
+                var requestUrl = workItemType ?
+                                helpers.fmt("/%@/_apis/wit/workitemtypes/%@/fields/%@?$expand=1", projectId, workItemType, fieldName) :
+                                helpers.fmt("/%@/_apis/wit/fields/%@?$expand=1", projectId, fieldName);
+
+                return this.vsoRequest(requestUrl);
+            },
+
             getVsoProjectAreas: function(projectId) {
                 return this.vsoRequest(helpers.fmt("/%@/_apis/wit/classificationnodes/areas", projectId), {
                     $depth: 9999,
@@ -378,6 +400,8 @@ const App = (function() {
                         refName: field.referenceName,
                         name: field.name,
                         type: field.type,
+                        isPicklist: field.isPicklist,
+                        description: field.description
                     };
                 }),
             });
@@ -451,7 +475,14 @@ const App = (function() {
                 fieldSettings: {},
                 userProfile: {},
                 isAppLoadedOk: false,
-                settings: { "vso_wi_description_template": this.setting("vso_wi_description_template") }
+                settings: { 
+                    "vso_wi_description_template": this.setting("vso_wi_description_template"),
+                    "vso_default_project": this.setting("vso_default_project"),
+                    "vso_valid_areas": this.setting("vso_valid_areas"),
+                    "vso_valid_workitems": this.setting("vso_valid_workitems"),
+                    "vso_default_workitem": this.setting("vso_default_workitem"),
+                    "vso_additional_fields":this.setting("vso_additional_fields")
+                }
             });
 
             if (data.firstLoad) {
@@ -466,6 +497,10 @@ const App = (function() {
                     "execute.query",
                     async function() {
                         let args = getMessageArg();
+                        if (args === null) {
+                            console.warn("Executing app query without setting message arg first");
+                            return;
+                        }
                         if (typeof args === "string") {
                             args = [args];
                         }
@@ -485,6 +520,7 @@ const App = (function() {
                     return this.switchTo("finish_setup");
                 } //set account url
 
+                TAG_PREFIX = this.setting("vso_workitem_tag_prefix");
                 assignVm({ accountUrl: this.buildAccountUrl() });
 
                 if (!this.store("auth_token_for_" + this.setting("vso_account"))) {

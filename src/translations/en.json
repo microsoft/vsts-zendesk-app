@@ -7,6 +7,30 @@
                 "helpText":
                     "Enter your Visual Studio Team Services subdomain (part before visualstudio.com). Learn more by visiting http://go.microsoft.com/fwlink/?LinkID=396756"
             },
+            "vso_workitem_tag_prefix": {
+                "label": "Workitem Tag Prefix",
+                "helpText": "When linking azure board items, tags with this prefix will be added to zendesk ticket. When using multiple azure organizations this must be distinct for each organization."
+            },
+            "vso_default_project": {
+                "label": "Default Project",
+                "helpText": "Project to be preselected when adding azure work items."
+            },
+            "vso_valid_areas": {
+                "label": "Valid Areas",
+                "helpText": "Comma separated list of area paths to be available for selection. Leave empty to show all areas."
+            },
+            "vso_valid_workitems": {
+                "label": "Valid Work Items",
+                "helpText": "Comma separated list of work item names that will be available when adding azure work items. List all work item types across different projects."
+            },
+            "vso_default_workitem": {
+                "label": "Default Work Item",
+                "helpText": "Work Item to be preselected when adding azure work items."
+            },
+            "vso_additional_fields": {
+                "label": "Additional Fields",
+                "helpText": "Comma separated list of additional fields that will be available when adding azure work items. List all fields across different work item types. Order the fields as you want them to appear on the form."
+            },
             "vso_tag": {
                 "label": "Visual Studio Team Services work item tag",
                 "helpText":

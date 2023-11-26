@@ -12,12 +12,45 @@
   "singleInstall": true,
   "private": true,
   "frameworkVersion": "2.0",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "parameters": [
     {
       "name": "vso_account",
       "type": "text",
       "required": true
+    },
+    {
+      "name": "vso_workitem_tag_prefix",
+      "type": "text",
+      "required": true,
+      "default":"vso_wi_"
+    },
+    {
+      "name": "vso_default_project",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "vso_valid_areas",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "vso_valid_workitems",
+      "type": "text",
+      "required": false,
+      "default": "Bug"
+    },
+    {
+      "name": "vso_default_workitem",
+      "type": "text",
+      "required": false
+    },
+    {
+      "name": "vso_additional_fields",
+      "type": "text",
+      "required": false,
+      "default": "Severity"
     },
     {
       "name": "vso_tag",

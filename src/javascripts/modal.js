@@ -1,6 +1,5 @@
 import ZAFClient from "zendesk_app_framework_sdk";
 import I18n from "i18n";
-import View from "view";
 import BaseApp from "base_app";
 import helpers from "helpers";
 window.helpers = helpers;
@@ -9,6 +8,16 @@ import _ from "lodash";
 String.prototype.fmt = function() {
     return helpers.fmt.apply(this, [this, ...arguments]);
 };
+
+Date.prototype.getIsoTimezoneOffset = function() {
+    var tzo = -this.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            var norm = Math.floor(Math.abs(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+    return  `${dif}${pad(tzo / 60)}:${pad(tzo % 60)}`;
+}
 
 // matches polyfill
 if (!Element.prototype.matches) {
@@ -134,7 +143,6 @@ var INSTALLATION_ID = 0,
     }),
     VSO_ZENDESK_LINK_TO_TICKET_PREFIX = "ZendeskLinkTo_Ticket_",
     VSO_ZENDESK_LINK_TO_TICKET_ATTACHMENT_PREFIX = "ZendeskLinkTo_Attachment_Ticket_",
-    VSO_WI_TYPES_WHITE_LISTS = ["Bug", "Product Backlog Item", "User Story", "Requirement", "Issue"],
     VSO_PROJECTS_PAGE_SIZE = 100; //#endregion
 
 // Create a new ZAFClient
@@ -308,6 +316,8 @@ const ModalApp = BaseApp.extend({
     action_initNewWorkItem: async function() {
         const $modal = this.$("[data-main]");
         $modal.find(".modal-body").html(this.renderTemplate("loading"));
+        this.resize({ height: "520px", width: "780px" });
+
         const data = await this.execQueryOnSidebar(["ajax", "getComments"]);
         var attachments = _.flatten(
             _.map(data.comments, function(comment) {
@@ -316,17 +326,24 @@ const ModalApp = BaseApp.extend({
             true,
         ); // Check if we have a template for decription
 
+        // Get custom fields on the ticket so that we can use them on form.
+        // Side note: due to the implementation of the queries, we cannot call both functions at once, e.g. using `await Promise.all()`
+        this.currentCustomFields = (await this.execQueryOnSidebar(["ajax", "getFullTicket"]))['ticket']['custom_fields'];
+        this.ticketFields = (await this.execQueryOnSidebar(["ajax", "getTicketFields"]))['ticket_fields'];
+
         var templateDefined = !!this.setting("vso_wi_description_template");
         $modal.find(".modal-body").html(
             this.renderTemplate("new", {
                 attachments: attachments,
-                templateDefined: templateDefined,
+                templateDefined: templateDefined
             }),
         );
+
         $modal.find(".summary").val(getVm("temp[ticket]").subject);
         var projectCombo = $modal.find(".project");
         this.fillComboWithProjects(projectCombo);
         $modal.find(".inputVsoProject").on("change", this.onNewVsoProjectChange.bind(this));
+        $modal.find("#type").on("change", this.onWorkItemTypeChange.bind(this));
         $modal.find(".copyDescription").on("click", () => {
             $modal.find(".description").val(getVm("temp[ticket]").description);
         });
@@ -341,11 +358,11 @@ const ModalApp = BaseApp.extend({
     },
 
     showBusy: function() {
-        this.$("[data-main] .busySpinner").show();
+        this.$(".busySpinner").show();
     },
 
     hideBusy: function() {
-        this.$("[data-main] .busySpinner").hide();
+        this.$(".busySpinner").hide();
     },
 
     onNewCopyTemplateClick: function(event) {
@@ -635,14 +652,27 @@ const ModalApp = BaseApp.extend({
             operations.push(this.buildPatchToAddWorkItemField("System.AreaId", areaId));
         }
 
-        if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.Common.Severity") && $modal.find(".severity").val()) {
-            operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.Common.Severity", $modal.find(".severity").val()));
-        }
+        $("[data-referenceName]").each((i,fld)=>{
+            var $fld = $(fld);
+            var fldValue;
+            switch (fld.type) {
+                case 'checkbox':
+                    fldValue = $fld.prop('checked')
+                    break;
+                case 'date':
+                    fldValue = `${$fld.val()}${new Date().getIsoTimezoneOffset()}`
+                    break;
+                default:
+                    fldValue = $fld.val();
+                    break;
+            }
+            operations.push(this.buildPatchToAddWorkItemField($fld.data('referencename'), fldValue));
+        });
 
         if (this.hasFieldDefined(workItemType, "Microsoft.VSTS.TCM.ReproSteps")) {
             operations.push(this.buildPatchToAddWorkItemField("Microsoft.VSTS.TCM.ReproSteps", description));
-        } 
-        
+        }
+
         //Set tag
         if (this.setting("vso_tag")) {
             operations.push(this.buildPatchToAddWorkItemField("System.Tags", this.setting("vso_tag")));
@@ -677,6 +707,54 @@ const ModalApp = BaseApp.extend({
 
         // close the modal.
         this.zafClient.invoke("destroy");
+    },
+
+    getZDTicketField: function(ticketFields, ticketTitle) {
+        const fields = _.filter(ticketFields, function(field) {
+            return field.title === ticketTitle;
+        });
+
+        if (fields.length === 0) {
+            return null;
+        }
+
+        return fields[0];
+    },
+
+    getZDTicketValue: function(ticketTitle, ticketFields, currentCustomFields) {
+        const field = this.getZDTicketField(ticketFields, ticketTitle);
+
+        if (field === null) {
+            console.warn(`Cannot find the field on ZD ticket '${ticketTitle}'`);
+            return null;
+        }
+
+        const foundFields = _.filter(currentCustomFields, function(customField) {
+            return customField.id === field.id;
+        });
+
+        if (foundFields === null || foundFields.length === 0) {
+            console.warn(`Cannot find the field on ZD ticket '${ticketTitle}' in the ticket's custom fields (looking for property id with value ${field.id}): `, currentCustomFields);
+            return null;
+        }
+
+        const currentTicketField = foundFields[0];
+       
+        if(field.custom_field_options){
+            const foundOptionsValues = _.filter(field.custom_field_options, function(fieldOption) {
+                return fieldOption.value === currentTicketField.value;
+            });
+
+            if (foundOptionsValues === null || foundOptionsValues.length === 0) {
+                console.warn(`Cannot find the option on ZD ticket '${currentTicketField.value}' in the defined field options (matching on the "value" field):`, field.custom_field_options);
+                return null;
+            }
+    
+            return foundOptionsValues[0].name;
+        }
+        else {
+            return currentTicketField.value;
+        }
     },
 
     isAlreadyLinkedToWorkItem: async function(id) {
@@ -816,7 +894,7 @@ const ModalApp = BaseApp.extend({
             }.bind(this),
         );
         return attachments;
-    },    
+    },
     buildPatchToRemoveWorkItemHyperlink: function(pos) {
         return {
             op: "remove",
@@ -849,7 +927,7 @@ const ModalApp = BaseApp.extend({
                 function() {
                     this.drawAreasList($modal.find(".area"), projId);
                     this.drawTypesList($modal.find(".type"), projId);
-                    $modal.find(".type").change();
+                    $modal.find("#type").change();
                     this.hideBusy();
                 }.bind(this),
             )
@@ -860,12 +938,37 @@ const ModalApp = BaseApp.extend({
                 }.bind(this),
             );
     },
+
+    onWorkItemTypeChange: async function(){
+        var $modal = this.$("[data-main]");
+        var projectId = $modal.find("#project").val();
+        var [project, done] = this.getProjectById(projectId);
+        var workItemTypeName = $modal.find("#type").val();
+        var workItemType = this.getWorkItemTypeByName(project, workItemTypeName);
+
+        if(workItemType.fieldDefinitions) {
+            $modal.find("#additional-fields-container").html(
+            this.renderTemplate("newWorkItemFields", {
+                fields: workItemType.fieldDefinitions.ids.map(id => {
+                        var ticketValue = this.getZDTicketValue(workItemType.fieldDefinitions[id].name, this.ticketFields, this.currentCustomFields);
+                        var fld = Object.assign({}, workItemType.fieldDefinitions[id]);
+                        fld.allowedValues = fld.allowedValues.map(v => ({value:v, selected: (v == ticketValue)}))
+                        var result = Object.assign({value: ticketValue}, fld);
+                        return result;
+                    })
+                }),
+            );
+        }
+        done();
+    },
+
     fillComboWithProjects: function(el) {
+        var defaultProject = getVm("settings[vso_default_project]");
         el.html(
             _.reduce(
                 getVm("projects"),
                 function(options, project) {
-                    return "%@<option value='%@'>%@</option>".fmt(options, project.id, project.name);
+                    return "%@<option value='%@' %@>%@</option>".fmt(options, project.id, project.name === defaultProject ? 'selected' : '', project.name);
                 },
                 "",
             ),
@@ -880,6 +983,69 @@ const ModalApp = BaseApp.extend({
 
         const workItemData = await this.execQueryOnSidebar(["ajax", "getVsoProjectWorkItemTypes", project.id]);
         project.workItemTypes = this.restrictToAllowedWorkItems(workItemData.value);
+
+        let allFields = getVm('fields');
+
+        let additionalFieldsString = getVm("settings[vso_additional_fields]");
+        if(additionalFieldsString){
+            let additionalFields = [];
+            let fieldsCache = {};
+
+            if(additionalFieldsString){
+                additionalFields = additionalFieldsString.split(",").map(f => f.trim());
+            }
+            
+            let isPicklist = (fld) => {
+                return fld.isPicklist || (fld.allowedValues && fld.allowedValues.length > 0)
+            }
+
+            for (let i = 0; i < project.workItemTypes.length; i++) {
+                const wi = project.workItemTypes[i];
+                wi.fieldDefinitions = {ids:[]};
+
+                for (let afi = 0; afi < additionalFields.length; afi++) {
+                    const fldName = additionalFields[afi];
+                    let fld = _.find(wi.fieldInstances, f => f.name == fldName);
+                    if(!fld){
+                        continue;
+                    }
+                    if(fieldsCache[fld.referenceName]){
+                        wi.fieldDefinitions.ids.push(fld.name);
+                        wi.fieldDefinitions[fld.name] = fieldsCache[fld.referenceName];
+                        continue;
+                    }
+
+                    fld.escapedRef = fld.referenceName.replace('.','_');
+                    let fldExtraInfo1 = await this.execQueryOnSidebar(["ajax", "getVsoWorkItemField", project.id, fld.name, wi.name]);
+                    let fldExtraInfo2 =  _.find(allFields, f => f.refName == fld.referenceName);
+                    
+                    fld = Object.assign({}, fld, fldExtraInfo1, fldExtraInfo2);
+
+                    switch (fld.type) {
+                        case 'dateTime':
+                            fld.isDateTime = true;
+                            break;
+                        case 'string':
+                        case 'integer':
+                            fld.isText = !isPicklist(fld);
+                            break;
+                        case 'boolean':
+                            fld.isCheckBox = true
+                            fld.checked = fld.defaultValue? 'checked': '';
+                            break;
+                        default:
+                            fld.isText = true;
+                            break;
+                    }
+
+                    fld.required = fld.alwaysRequired ? 'required' : '';
+                    fld.isPicklist = isPicklist(fld);
+                    wi.fieldDefinitions.ids.push(fld.name);
+                    wi.fieldDefinitions[fld.name] = fld;
+                    fieldsCache[fld.referenceName] = fld;
+                }
+            }
+        }
 
         const areaData = await this.execQueryOnSidebar(["ajax", "getVsoProjectAreas", project.id]);
         var areas = []; // Flatten areas to format \Area 1\Area 1.1
@@ -900,6 +1066,12 @@ const ModalApp = BaseApp.extend({
         };
 
         visitArea(areaData);
+        var validAreasString = getVm("settings[vso_valid_areas]");
+        if(validAreasString){
+            var validAreas = validAreasString.split(',').map(a => a.trim());
+            areas = areas.filter(a => validAreas.indexOf(a.name) >= 0);
+        }
+        
         project.areas = _.sortBy(areas, function(area) {
             return area.name;
         });
@@ -978,8 +1150,17 @@ const ModalApp = BaseApp.extend({
         }
     },
     restrictToAllowedWorkItems: function(wits) {
+        var defaultWorkItem = getVm("settings[vso_default_workitem]");
+
+        var validWorkItemsString = getVm("settings[vso_valid_workitems]");
+        var validWorkItems = [];
+        if(validWorkItemsString){
+            validWorkItems = validWorkItemsString.split(',').map(wit => wit.trim());
+        }
+
         return _.filter(wits, function(wit) {
-            return _.contains(VSO_WI_TYPES_WHITE_LISTS, wit.name);
+            wit.selected = wit.name === defaultWorkItem ? 'selected' : '';
+            return !wit.isDisabled && (!validWorkItemsString || _.contains(validWorkItems, wit.name));
         });
     },
     attachRestrictedFieldsToWorkItem: function(workItem, type) {
